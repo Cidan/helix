@@ -1,5 +1,7 @@
 package helix
 
+import "context"
+
 // Prediction ... same struct as Poll
 type Prediction struct {
 	ID                   string     `json:"id"`
@@ -56,8 +58,8 @@ type GetPredictionsResponse struct {
 }
 
 // Required scope: channel:read:predictions
-func (c *Client) GetPredictions(params *PredictionsParams, opts ...Options) (*PredictionsResponse, error) {
-	resp, err := c.get("/predictions", &ManyPredictions{}, params, opts...)
+func (c *Client) GetPredictions(ctx context.Context, params *PredictionsParams, opts ...Option) (*PredictionsResponse, error) {
+	resp, err := c.get(ctx, "/predictions", &ManyPredictions{}, params, opts)
 	if err != nil {
 		return nil, err
 	}
@@ -82,8 +84,8 @@ type PredictionChoiceParam struct {
 }
 
 // Required scope: channel:manage:predictions
-func (c *Client) CreatePrediction(params *CreatePredictionParams, opts ...Options) (*PredictionsResponse, error) {
-	resp, err := c.postAsJSON("/predictions", &ManyPredictions{}, params, opts...)
+func (c *Client) CreatePrediction(ctx context.Context, params *CreatePredictionParams, opts ...Option) (*PredictionsResponse, error) {
+	resp, err := c.postAsJSON(ctx, "/predictions", &ManyPredictions{}, params, opts)
 	if err != nil {
 		return nil, err
 	}
@@ -104,8 +106,8 @@ type EndPredictionParams struct {
 }
 
 // Required scope: channel:manage:predictions
-func (c *Client) EndPrediction(params *EndPredictionParams, opts ...Options) (*PredictionsResponse, error) {
-	resp, err := c.patchAsJSON("/predictions", &ManyPredictions{}, params, opts...)
+func (c *Client) EndPrediction(ctx context.Context, params *EndPredictionParams, opts ...Option) (*PredictionsResponse, error) {
+	resp, err := c.patchAsJSON(ctx, "/predictions", &ManyPredictions{}, params, opts)
 	if err != nil {
 		return nil, err
 	}

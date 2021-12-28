@@ -1,6 +1,9 @@
 package helix
 
-import "time"
+import (
+	"context"
+	"time"
+)
 
 type User struct {
 	ID              string `json:"id"`
@@ -35,8 +38,8 @@ type UsersParams struct {
 // a user ID nor a login name is specified, the user is looked up by Bearer token.
 //
 // Optional scope: user:read:email
-func (c *Client) GetUsers(params *UsersParams, opts ...Options) (*UsersResponse, error) {
-	resp, err := c.get("/users", &ManyUsers{}, params, opts...)
+func (c *Client) GetUsers(ctx context.Context, params *UsersParams, opts ...Option) (*UsersResponse, error) {
+	resp, err := c.get(ctx, "/users", &ManyUsers{}, params, opts)
 	if err != nil {
 		return nil, err
 	}
@@ -56,8 +59,8 @@ type UpdateUserParams struct {
 // by a Bearer token.
 //
 // Required scope: user:edit
-func (c *Client) UpdateUser(params *UpdateUserParams, opts ...Options) (*UsersResponse, error) {
-	resp, err := c.put("/users", &ManyUsers{}, params, opts...)
+func (c *Client) UpdateUser(ctx context.Context, params *UpdateUserParams, opts ...Option) (*UsersResponse, error) {
+	resp, err := c.put(ctx, "/users", &ManyUsers{}, params, opts)
 	if err != nil {
 		return nil, err
 	}
@@ -100,8 +103,8 @@ type UsersFollowsParams struct {
 // Information returned is sorted in order, most recent follow first. This can return
 // information like “who is lirik following,” “who is following lirik,” or “is user X
 // following user Y.”
-func (c *Client) GetUsersFollows(params *UsersFollowsParams, opts ...Options) (*UsersFollowsResponse, error) {
-	resp, err := c.get("/users/follows", &ManyFollows{}, params, opts...)
+func (c *Client) GetUsersFollows(ctx context.Context, params *UsersFollowsParams, opts ...Option) (*UsersFollowsResponse, error) {
+	resp, err := c.get(ctx, "/users/follows", &ManyFollows{}, params, opts)
 	if err != nil {
 		return nil, err
 	}
@@ -140,8 +143,8 @@ type UsersBlockedParams struct {
 // GetUsersBlocked : Gets a specified user’s block list.
 //
 // Required scope: user:read:blocked_users
-func (c *Client) GetUsersBlocked(params *UsersBlockedParams, opts ...Options) (*UsersBlockedResponse, error) {
-	resp, err := c.get("/users/blocks", &ManyUsersBlocked{}, params, opts...)
+func (c *Client) GetUsersBlocked(ctx context.Context, params *UsersBlockedParams, opts ...Option) (*UsersBlockedResponse, error) {
+	resp, err := c.get(ctx, "/users/blocks", &ManyUsersBlocked{}, params, opts)
 	if err != nil {
 		return nil, err
 	}
@@ -167,8 +170,8 @@ type BlockUserParams struct {
 // BlockUser : Blocks the specified user on behalf of the authenticated user.
 //
 // Required scope: user:manage:blocked_users
-func (c *Client) BlockUser(params *BlockUserParams, opts ...Options) (*BlockUserResponse, error) {
-	resp, err := c.put("/users/blocks", nil, params, opts...)
+func (c *Client) BlockUser(ctx context.Context, params *BlockUserParams, opts ...Option) (*BlockUserResponse, error) {
+	resp, err := c.put(ctx, "/users/blocks", nil, params, opts)
 	if err != nil {
 		return nil, err
 	}
@@ -186,8 +189,8 @@ type UnblockUserParams struct {
 // UnblockUser : Unblocks the specified user on behalf of the authenticated user.
 //
 // Required scope: user:manage:blocked_users
-func (c *Client) UnblockUser(params *UnblockUserParams, opts ...Options) (*BlockUserResponse, error) {
-	resp, err := c.delete("/users/blocks", nil, params, opts...)
+func (c *Client) UnblockUser(ctx context.Context, params *UnblockUserParams, opts ...Option) (*BlockUserResponse, error) {
+	resp, err := c.delete(ctx, "/users/blocks", nil, params, opts)
 	if err != nil {
 		return nil, err
 	}

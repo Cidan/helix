@@ -1,5 +1,7 @@
 package helix
 
+import "context"
+
 type GetChatBadgeParams struct {
 	BroadcasterID string `query:"broadcaster_id"`
 }
@@ -25,8 +27,8 @@ type BadgeVersion struct {
 	ImageUrl4x string `json:"image_url_4x"`
 }
 
-func (c *Client) GetChannelChatBadges(params *GetChatBadgeParams, opts ...Options) (*GetChatBadgeResponse, error) {
-	resp, err := c.get("/chat/badges", &ManyChatBadge{}, params, opts...)
+func (c *Client) GetChannelChatBadges(ctx context.Context, params *GetChatBadgeParams, opts ...Option) (*GetChatBadgeResponse, error) {
+	resp, err := c.get(ctx, "/chat/badges", &ManyChatBadge{}, params, opts)
 	if err != nil {
 		return nil, err
 	}
@@ -38,8 +40,8 @@ func (c *Client) GetChannelChatBadges(params *GetChatBadgeParams, opts ...Option
 	return channels, nil
 }
 
-func (c *Client) GetGlobalChatBadges(opts ...Options) (*GetChatBadgeResponse, error) {
-	resp, err := c.get("/chat/badges/global", &ManyChatBadge{}, nil, opts...)
+func (c *Client) GetGlobalChatBadges(ctx context.Context, opts ...Option) (*GetChatBadgeResponse, error) {
+	resp, err := c.get(ctx, "/chat/badges/global", &ManyChatBadge{}, nil, opts)
 	if err != nil {
 		return nil, err
 	}
@@ -97,8 +99,8 @@ type EmoteImage struct {
 	Url4x string `json:"url_4x"`
 }
 
-func (c *Client) GetChannelEmotes(params *GetChannelEmotesParams, opts ...Options) (*GetChannelEmotesResponse, error) {
-	resp, err := c.get("/chat/emotes", &ManyEmotes{}, params, opts...)
+func (c *Client) GetChannelEmotes(ctx context.Context, params *GetChannelEmotesParams, opts ...Option) (*GetChannelEmotesResponse, error) {
+	resp, err := c.get(ctx, "/chat/emotes", &ManyEmotes{}, params, opts)
 	if err != nil {
 		return nil, err
 	}
@@ -110,8 +112,8 @@ func (c *Client) GetChannelEmotes(params *GetChannelEmotesParams, opts ...Option
 	return emotes, nil
 }
 
-func (c *Client) GetGlobalEmotes(opts ...Options) (*GetChannelEmotesResponse, error) {
-	resp, err := c.get("/chat/emotes/global", &ManyEmotes{}, nil, opts...)
+func (c *Client) GetGlobalEmotes(ctx context.Context, opts ...Option) (*GetChannelEmotesResponse, error) {
+	resp, err := c.get(ctx, "/chat/emotes/global", &ManyEmotes{}, nil, opts)
 	if err != nil {
 		return nil, err
 	}
@@ -124,8 +126,8 @@ func (c *Client) GetGlobalEmotes(opts ...Options) (*GetChannelEmotesResponse, er
 }
 
 // GetEmoteSets
-func (c *Client) GetEmoteSets(params *GetEmoteSetsParams, opts ...Options) (*GetEmoteSetsResponse, error) {
-	resp, err := c.get("/chat/emotes/set", &ManyEmotesWithOwner{}, params, opts...)
+func (c *Client) GetEmoteSets(ctx context.Context, params *GetEmoteSetsParams, opts ...Option) (*GetEmoteSetsResponse, error) {
+	resp, err := c.get(ctx, "/chat/emotes/set", &ManyEmotesWithOwner{}, params, opts)
 	if err != nil {
 		return nil, err
 	}

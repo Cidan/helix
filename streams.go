@@ -1,6 +1,9 @@
 package helix
 
-import "time"
+import (
+	"context"
+	"time"
+)
 
 type Stream struct {
 	ID           string    `json:"id"`
@@ -42,8 +45,8 @@ type StreamsParams struct {
 
 // GetStreams returns a list of live channels based on the search parameters.
 // To query offline channels, use SearchChannels.
-func (c *Client) GetStreams(params *StreamsParams, opts ...Options) (*StreamsResponse, error) {
-	resp, err := c.get("/streams", &ManyStreams{}, params, opts...)
+func (c *Client) GetStreams(ctx context.Context, params *StreamsParams, opts ...Option) (*StreamsResponse, error) {
+	resp, err := c.get(ctx, "/streams", &ManyStreams{}, params, opts)
 	if err != nil {
 		return nil, err
 	}
@@ -69,8 +72,8 @@ type FollowedStreamsParams struct {
 // may be duplicate or missing streams, as viewers join and leave streams.
 //
 // Required scope: user:read:follows
-func (c *Client) GetFollowedStream(params *FollowedStreamsParams, opts ...Options) (*StreamsResponse, error) {
-	resp, err := c.get("/streams/followed", &ManyStreams{}, params, opts...)
+func (c *Client) GetFollowedStream(ctx context.Context, params *FollowedStreamsParams, opts ...Option) (*StreamsResponse, error) {
+	resp, err := c.get(ctx, "/streams/followed", &ManyStreams{}, params, opts)
 	if err != nil {
 		return nil, err
 	}

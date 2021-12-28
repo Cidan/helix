@@ -3,6 +3,7 @@ package helix
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -23,9 +24,9 @@ const (
 	AuthBaseURL = "https://id.twitch.tv/oauth2"
 )
 
-type HTTPClient interface {
-	Do(req *http.Request) (*http.Response, error)
-}
+type Option func(*Options) error
+
+type httpDo func(*http.Request) (*http.Response, error)
 
 type Client struct {
 	mu           sync.RWMutex
@@ -34,16 +35,16 @@ type Client struct {
 }
 
 type Options struct {
-	ClientID        string
-	ClientSecret    string
-	AppAccessToken  string
-	UserAccessToken string
-	UserAgent       string
-	RedirectURI     string
-	HTTPClient      HTTPClient
-	RateLimitFunc   RateLimitFunc
-	APIBaseURL      string
-	ExtensionOpts   ExtensionOptions
+	clientID        string
+	clientSecret    string
+	appAccessToken  string
+	userAccessToken string
+	userAgent       string
+	redirectURI     string
+	httpDo          httpDo
+	rateLimitFunc   RateLimitFunc
+	apiBaseURL      string
+	extensionOpts   ExtensionOptions
 }
 
 type ExtensionOptions struct {
@@ -107,57 +108,134 @@ type Pagination struct {
 	Cursor string `json:"cursor"`
 }
 
+func defaultClientOpts() *Options {
+	return &Options{
+		userAgent:   "Twitch Helix API Go library github.com/nicklaw5/helix",
+		redirectURI: DefaultAPIBaseURL,
+		httpDo:      http.DefaultClient.Do,
+		apiBaseURL:  DefaultAPIBaseURL,
+	}
+}
+
+func WithHttpDo(f httpDo) Option {
+	return func(o *Options) error {
+		o.httpDo = f
+		return nil
+	}
+}
+
+func WithClientID(v string) Option {
+	return func(o *Options) error {
+		o.clientID = v
+		return nil
+	}
+}
+
+func WithClientSecret(v string) Option {
+	return func(o *Options) error {
+		o.clientSecret = v
+		return nil
+	}
+}
+
+func WithRedirectURI(v string) Option {
+	return func(o *Options) error {
+		o.redirectURI = v
+		return nil
+	}
+}
+
+func WithUserAccessToken(v string) Option {
+	return func(o *Options) error {
+		o.userAccessToken = v
+		return nil
+	}
+}
+
+func WithAppAccessToken(v string) Option {
+	return func(o *Options) error {
+		o.appAccessToken = v
+		return nil
+	}
+}
+
+func WithUserAgent(v string) Option {
+	return func(o *Options) error {
+		o.userAgent = v
+		return nil
+	}
+}
+
+func WithExtensionOptions(v ExtensionOptions) Option {
+	return func(o *Options) error {
+		o.extensionOpts = v
+		return nil
+	}
+}
+
+func WithRateLimitFunc(v RateLimitFunc) Option {
+	return func(o *Options) error {
+		o.rateLimitFunc = v
+		return nil
+	}
+}
+
+func WithAPIBaseURL(v string) Option {
+	return func(o *Options) error {
+		o.apiBaseURL = v
+		return nil
+	}
+}
+
 // NewClient returns a new Twitch Helix API client. It returns an
 // if clientID is an empty string. It is concurrency safe.
-func NewClient(options *Options) (*Client, error) {
-	if options.ClientID == "" {
+func NewClient(ctx context.Context, opts ...Option) (*Client, error) {
+	c := &Client{
+		opts: defaultClientOpts(),
+	}
+
+	for _, opt := range opts {
+		if err := opt(c.opts); err != nil {
+			return nil, err
+		}
+	}
+
+	if c.opts.clientID == "" {
 		return nil, errors.New("A client ID was not provided but is required")
 	}
 
-	if options.HTTPClient == nil {
-		options.HTTPClient = http.DefaultClient
-	}
-
-	if options.APIBaseURL == "" {
-		options.APIBaseURL = DefaultAPIBaseURL
-	}
-
-	client := &Client{
-		opts: options,
-	}
-
-	return client, nil
+	return c, nil
 }
 
-func (c *Client) get(path string, respData, reqData interface{}, opts ...Options) (*Response, error) {
-	return c.sendRequest(http.MethodGet, path, respData, reqData, false, opts...)
+func (c *Client) get(ctx context.Context, path string, respData, reqData interface{}, opts []Option) (*Response, error) {
+	return c.sendRequest(ctx, http.MethodGet, path, respData, reqData, false, opts)
 }
 
-func (c *Client) post(path string, respData, reqData interface{}, opts ...Options) (*Response, error) {
-	return c.sendRequest(http.MethodPost, path, respData, reqData, false, opts...)
+func (c *Client) post(ctx context.Context, path string, respData, reqData interface{}, opts []Option) (*Response, error) {
+	return c.sendRequest(ctx, http.MethodPost, path, respData, reqData, false, opts)
 }
 
-func (c *Client) put(path string, respData, reqData interface{}, opts ...Options) (*Response, error) {
-	return c.sendRequest(http.MethodPut, path, respData, reqData, false, opts...)
+func (c *Client) put(ctx context.Context, path string, respData, reqData interface{}, opts []Option) (*Response, error) {
+	return c.sendRequest(ctx, http.MethodPut, path, respData, reqData, false, opts)
 }
 
-func (c *Client) delete(path string, respData, reqData interface{}, opts ...Options) (*Response, error) {
-	return c.sendRequest(http.MethodDelete, path, respData, reqData, false, opts...)
+func (c *Client) delete(ctx context.Context, path string, respData, reqData interface{}, opts []Option) (*Response, error) {
+	return c.sendRequest(ctx, http.MethodDelete, path, respData, reqData, false, opts)
 }
 
-func (c *Client) patchAsJSON(path string, respData, reqData interface{}, opts ...Options) (*Response, error) {
-	return c.sendRequest(http.MethodPatch, path, respData, reqData, true, opts...)
+func (c *Client) patchAsJSON(ctx context.Context, path string, respData, reqData interface{}, opts []Option) (*Response, error) {
+	return c.sendRequest(ctx, http.MethodPatch, path, respData, reqData, true, opts)
 }
 
-func (c *Client) postAsJSON(path string, respData, reqData interface{}, opts ...Options) (*Response, error) {
-	return c.sendRequest(http.MethodPost, path, respData, reqData, true, opts...)
+func (c *Client) postAsJSON(ctx context.Context, path string, respData, reqData interface{}, opts []Option) (*Response, error) {
+	return c.sendRequest(ctx, http.MethodPost, path, respData, reqData, true, opts)
 }
 
-func (c *Client) putAsJSON(path string, respData, reqData interface{}, opts ...Options) (*Response, error) {
-	return c.sendRequest(http.MethodPut, path, respData, reqData, true, opts...)
+func (c *Client) putAsJSON(ctx context.Context, path string, respData, reqData interface{}, opts []Option) (*Response, error) {
+	return c.sendRequest(ctx, http.MethodPut, path, respData, reqData, true, opts)
 }
 
-func (c *Client) sendRequest(method, path string, respData, reqData interface{}, hasJSONBody bool, opts ...Options) (*Response, error) {
+func (c *Client) sendRequest(ctx context.Context, method, path string, respData, reqData interface{}, hasJSONBody bool, opts []Option) (*Response, error) {
 	resp := &Response{}
 	if respData != nil {
 		resp.Data = respData
@@ -168,7 +246,7 @@ func (c *Client) sendRequest(method, path string, respData, reqData interface{},
 		return nil, err
 	}
 
-	err = c.doRequest(req, resp, opts...)
+	err = c.doRequest(req.WithContext(ctx), resp, opts)
 	if err != nil {
 		return nil, err
 	}
@@ -319,13 +397,28 @@ func (c *Client) getBaseURL(path string) string {
 		}
 	}
 
-	return c.opts.APIBaseURL
+	return c.opts.apiBaseURL
 }
 
-func (c *Client) doRequest(req *http.Request, resp *Response, opts ...Options) error {
-	c.setRequestHeaders(req, opts...)
+func (c *Client) mergeOptions(opts []Option) (*Options, error) {
+	o := *c.opts
+	for _, opt := range opts {
+		if err := opt(&o); err != nil {
+			return nil, err
+		}
+	}
+	return &o, nil
+}
 
-	rateLimitFunc := c.opts.RateLimitFunc
+func (c *Client) doRequest(req *http.Request, resp *Response, opts []Option) error {
+	o, err := c.mergeOptions(opts)
+	if err != nil {
+		return err
+	}
+
+	c.setRequestHeaders(req, o)
+
+	rateLimitFunc := c.opts.rateLimitFunc
 
 	for {
 		if c.lastResponse != nil && rateLimitFunc != nil {
@@ -335,7 +428,7 @@ func (c *Client) doRequest(req *http.Request, resp *Response, opts ...Options) e
 			}
 		}
 
-		response, err := c.opts.HTTPClient.Do(req)
+		response, err := c.opts.httpDo(req)
 		if err != nil {
 			return fmt.Errorf("Failed to execute API request: %s", err.Error())
 		}
@@ -386,28 +479,22 @@ func (c *Client) doRequest(req *http.Request, resp *Response, opts ...Options) e
 	return nil
 }
 
-func (c *Client) setRequestHeaders(req *http.Request, opts ...Options) {
-	var options Options
-	if len(opts) == 0 {
-		options = *c.opts
-	} else {
-		options = opts[0]
-	}
-	req.Header.Set("Client-ID", options.ClientID)
+func (c *Client) setRequestHeaders(req *http.Request, opts *Options) {
+	req.Header.Set("Client-ID", opts.clientID)
 
-	if options.UserAgent != "" {
-		req.Header.Set("User-Agent", options.UserAgent)
+	if opts.userAgent != "" {
+		req.Header.Set("User-Agent", opts.userAgent)
 	}
 
 	var bearerToken string
-	if options.AppAccessToken != "" {
-		bearerToken = options.AppAccessToken
+	if opts.appAccessToken != "" {
+		bearerToken = opts.appAccessToken
 	}
-	if options.UserAccessToken != "" {
-		bearerToken = options.UserAccessToken
+	if opts.userAccessToken != "" {
+		bearerToken = opts.userAccessToken
 	}
-	if options.ExtensionOpts.SignedJWTToken != "" {
-		bearerToken = options.ExtensionOpts.SignedJWTToken
+	if opts.extensionOpts.SignedJWTToken != "" {
+		bearerToken = opts.extensionOpts.SignedJWTToken
 	}
 
 	authType := "Bearer"
@@ -429,45 +516,35 @@ func setResponseStatusCode(v interface{}, fieldName string, code int) {
 
 // GetAppAccessToken returns the current app access token.
 func (c *Client) GetAppAccessToken() string {
-	return c.opts.AppAccessToken
+	return c.opts.appAccessToken
 }
 
 func (c *Client) SetAppAccessToken(accessToken string) {
-	c.mu.Lock()
-	defer c.mu.Unlock()
-	c.opts.AppAccessToken = accessToken
+	c.opts.appAccessToken = accessToken
 }
 
 // GetUserAccessToken returns the current user access token.
 func (c *Client) GetUserAccessToken() string {
-	return c.opts.UserAccessToken
+	return c.opts.userAccessToken
 }
 
 func (c *Client) SetUserAccessToken(accessToken string) {
-	c.mu.Lock()
-	defer c.mu.Unlock()
-	c.opts.UserAccessToken = accessToken
+	c.opts.userAccessToken = accessToken
 }
 
 // GetAppAccessToken returns the current app access token.
 func (c *Client) GetExtensionSignedJWTToken() string {
-	return c.opts.ExtensionOpts.SignedJWTToken
+	return c.opts.extensionOpts.SignedJWTToken
 }
 
 func (c *Client) SetExtensionSignedJWTToken(jwt string) {
-	c.mu.Lock()
-	defer c.mu.Unlock()
-	c.opts.ExtensionOpts.SignedJWTToken = jwt
+	c.opts.extensionOpts.SignedJWTToken = jwt
 }
 
 func (c *Client) SetUserAgent(userAgent string) {
-	c.mu.Lock()
-	defer c.mu.Unlock()
-	c.opts.UserAgent = userAgent
+	c.opts.userAgent = userAgent
 }
 
 func (c *Client) SetRedirectURI(uri string) {
-	c.mu.Lock()
-	defer c.mu.Unlock()
-	c.opts.RedirectURI = uri
+	c.opts.redirectURI = uri
 }

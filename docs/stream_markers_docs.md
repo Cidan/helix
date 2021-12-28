@@ -7,7 +7,7 @@ the current time. The user needs to be authenticated and requires the
 `user:edit:broadcast` scope. Markers cannot be created in [some cases](https://dev.twitch.tv/docs/api/reference/#create-stream-marker).
 
 ```go
-client, err := helix.NewClient(&helix.Options{
+client, err := helix.NewClient(context.Background()
     ClientID:        "your-client-id",
     UserAccessToken: "your-user-access-token",
 })
@@ -16,10 +16,10 @@ if err != nil {
     // handle error
 }
 
-resp, err := client.CreateStreamMarker(&helix.CreateStreamMarkerParams{
+resp, err := client.CreateStreamMarker(context.Background(), &helix.CreateStreamMarkerParams{
     UserId: "123",
     Description: "a notable moment",
-})
+)
 if err != nil {
     // handle error
 }
@@ -35,7 +35,7 @@ requesting the first two stream markers of a VOD. The authenticated user require
 `user:read:broadcast` scope to be able to request stream markers of this user.
 
 ```go
-client, err := helix.NewClient(&helix.Options{
+client, err := helix.NewClient(context.Background()
     ClientID:        "your-client-id",
     UserAccessToken: "your-user-access-token",
 })
@@ -44,10 +44,10 @@ if err != nil {
     // handle error
 }
 
-resp, err := client.GetStreamMarkers(&helix.StreamMarkersParams{
+resp, err := client.GetStreamMarkers(context.Background(), &helix.StreamMarkersParams{
     First: 2,
     VideoID: "123",
-})
+)
 if err != nil {
     // handle error
 }

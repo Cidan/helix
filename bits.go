@@ -1,6 +1,9 @@
 package helix
 
-import "time"
+import (
+	"context"
+	"time"
+)
 
 type UserBitTotal struct {
 	UserID    string `json:"user_id"`
@@ -32,8 +35,8 @@ type BitsLeaderboardParams struct {
 // information for an authorized broadcaster.
 //
 // Required Scope: bits:read
-func (c *Client) GetBitsLeaderboard(params *BitsLeaderboardParams, opts ...Options) (*BitsLeaderboardResponse, error) {
-	resp, err := c.get("/bits/leaderboard", &ManyUserBitTotals{}, params, opts...)
+func (c *Client) GetBitsLeaderboard(ctx context.Context, params *BitsLeaderboardParams, opts ...Option) (*BitsLeaderboardResponse, error) {
+	resp, err := c.get(ctx, "/bits/leaderboard", &ManyUserBitTotals{}, params, opts)
 	if err != nil {
 		return nil, err
 	}
@@ -96,8 +99,8 @@ type CheermotesResponse struct {
 	Data ManyCheermotes
 }
 
-func (c *Client) GetCheermotes(params *CheermotesParams, opts ...Options) (*CheermotesResponse, error) {
-	resp, err := c.get("/bits/cheermotes", &ManyCheermotes{}, params, opts...)
+func (c *Client) GetCheermotes(ctx context.Context, params *CheermotesParams, opts ...Option) (*CheermotesResponse, error) {
+	resp, err := c.get(ctx, "/bits/cheermotes", &ManyCheermotes{}, params, opts)
 	if err != nil {
 		return nil, err
 	}

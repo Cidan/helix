@@ -1,5 +1,7 @@
 package helix
 
+import "context"
+
 type Poll struct {
 	ID                         string       `json:"id"`
 	BroadcasterID              string       `json:"broadcaster_id"`
@@ -48,8 +50,8 @@ type GetPollsResponse struct {
 }
 
 // Required scope: channel:read:polls
-func (c *Client) GetPolls(params *PollsParams, opts ...Options) (*PollsResponse, error) {
-	resp, err := c.get("/polls", &ManyPolls{}, params, opts...)
+func (c *Client) GetPolls(ctx context.Context, params *PollsParams, opts ...Option) (*PollsResponse, error) {
+	resp, err := c.get(ctx, "/polls", &ManyPolls{}, params, opts)
 	if err != nil {
 		return nil, err
 	}
@@ -78,8 +80,8 @@ type PollChoiceParam struct {
 }
 
 // Required scope: channel:manage:polls
-func (c *Client) CreatePoll(params *CreatePollParams, opts ...Options) (*PollsResponse, error) {
-	resp, err := c.postAsJSON("/polls", &ManyPolls{}, params, opts...)
+func (c *Client) CreatePoll(ctx context.Context, params *CreatePollParams, opts ...Option) (*PollsResponse, error) {
+	resp, err := c.postAsJSON(ctx, "/polls", &ManyPolls{}, params, opts)
 	if err != nil {
 		return nil, err
 	}
@@ -99,8 +101,8 @@ type EndPollParams struct {
 }
 
 // Required scope: channel:manage:polls
-func (c *Client) EndPoll(params *EndPollParams, opts ...Options) (*PollsResponse, error) {
-	resp, err := c.patchAsJSON("/polls", &ManyPolls{}, params, opts...)
+func (c *Client) EndPoll(ctx context.Context, params *EndPollParams, opts ...Option) (*PollsResponse, error) {
+	resp, err := c.patchAsJSON(ctx, "/polls", &ManyPolls{}, params, opts)
 	if err != nil {
 		return nil, err
 	}

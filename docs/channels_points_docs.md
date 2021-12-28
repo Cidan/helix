@@ -5,18 +5,18 @@
 This is an example of how to create a custom reward.
 
 ```go
-client, err := helix.NewClient(&helix.Options{
-    ClientID: "your-client-id",
-})
+client, err := helix.NewClient(context.Background()
+    helix.WithClientID("your-client-id"),
+)
 if err != nil {
     // handle error
 }
 
-resp, err := client.CreateCustomReward(&helix.ChannelCustomRewardsParams{
+resp, err := client.CreateCustomReward(context.Background(), &helix.ChannelCustomRewardsParams{
     BroadcasterID : "145328278",
     Title         : "game analysis 1v1",
     Cost          : 50000,
-})
+)
 if err != nil {
     // handle error
 }
@@ -29,17 +29,17 @@ fmt.Printf("%+v\n", resp)
 This is an example of how to delete a custom rewards.
 
 ```go
-client, err := helix.NewClient(&helix.Options{
-    ClientID: "your-client-id",
-})
+client, err := helix.NewClient(context.Background()
+    helix.WithClientID("your-client-id"),
+)
 if err != nil {
     // handle error
 }
 
-resp, err := client.DeleteCustomRewards(&helix.DeleteCustomRewardsParams{
+resp, err := client.DeleteCustomRewards(context.Background(), &helix.DeleteCustomRewardsParams{
     BroadcasterID : "145328278",
     ID            : "84da6b13-efe1-4a82-91d0-25260aeb6a9b",
-})
+)
 if err != nil {
     // handle error
 }
@@ -52,16 +52,16 @@ fmt.Printf("%+v\n", resp)
 This is an example of how to get a custom rewards.
 
 ```go
-client, err := helix.NewClient(&helix.Options{
-    ClientID: "your-client-id",
-})
+client, err := helix.NewClient(context.Background()
+    helix.WithClientID("your-client-id"),
+)
 if err != nil {
     // handle error
 }
 
-resp, err := client.GetCustomRewards(&helix.GetCustomRewardsParams{
+resp, err := client.GetCustomRewards(context.Background(), &helix.GetCustomRewardsParams{
     BroadcasterID : "145328278",
-})
+)
 if err != nil {
     // handle error
 }

@@ -1,5 +1,7 @@
 package helix
 
+import "context"
+
 // GetExtensionSecretResponse response structure received
 // when generating or querying for generated secrets
 type ExtensionSecretCreationResponse struct {
@@ -39,8 +41,8 @@ type GetExtensionSecretParams struct {
 	ExtensionID string `query:"extension_id"`
 }
 
-func (c *Client) CreateExtensionSecret(params *ExtensionSecretCreationParams, opts ...Options) (*ExtensionSecretCreationResponse, error) {
-	resp, err := c.post("/extensions/jwt/secrets", &ManyExtensionSecrets{}, params, opts...)
+func (c *Client) CreateExtensionSecret(ctx context.Context, params *ExtensionSecretCreationParams, opts ...Option) (*ExtensionSecretCreationResponse, error) {
+	resp, err := c.post(ctx, "/extensions/jwt/secrets", &ManyExtensionSecrets{}, params, opts)
 	if err != nil {
 		return nil, err
 	}
@@ -52,8 +54,8 @@ func (c *Client) CreateExtensionSecret(params *ExtensionSecretCreationParams, op
 	return events, nil
 }
 
-func (c *Client) GetExtensionSecrets(params *GetExtensionSecretParams, opts ...Options) (*GetExtensionSecretResponse, error) {
-	resp, err := c.postAsJSON("/extensions/jwt/secrets", &ManyExtensionSecrets{}, params, opts...)
+func (c *Client) GetExtensionSecrets(ctx context.Context, params *GetExtensionSecretParams, opts ...Option) (*GetExtensionSecretResponse, error) {
+	resp, err := c.postAsJSON(ctx, "/extensions/jwt/secrets", &ManyExtensionSecrets{}, params, opts)
 	if err != nil {
 		return nil, err
 	}

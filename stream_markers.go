@@ -1,5 +1,7 @@
 package helix
 
+import "context"
+
 type Marker struct {
 	ID              string `json:"id"`
 	CreatedAt       Time   `json:"created_at"`
@@ -49,8 +51,8 @@ type StreamMarkersParams struct {
 // of an user being recorded as VOD.
 //
 // Required Scope: user:read:broadcast
-func (c *Client) GetStreamMarkers(params *StreamMarkersParams, opts ...Options) (*StreamMarkersResponse, error) {
-	resp, err := c.get("/streams/markers", &ManyStreamMarkers{}, params, opts...)
+func (c *Client) GetStreamMarkers(ctx context.Context, params *StreamMarkersParams, opts ...Option) (*StreamMarkersResponse, error) {
+	resp, err := c.get(ctx, "/streams/markers", &ManyStreamMarkers{}, params, opts)
 	if err != nil {
 		return nil, err
 	}
@@ -92,8 +94,8 @@ type CreateStreamMarkerParams struct {
 // https://dev.twitch.tv/docs/api/reference/#create-stream-marker
 //
 // Required Scope: user:edit:broadcast
-func (c *Client) CreateStreamMarker(params *CreateStreamMarkerParams, opts ...Options) (*CreateStreamMarkerResponse, error) {
-	resp, err := c.post("/streams/markers", &ManyCreateStreamMarkers{}, params, opts...)
+func (c *Client) CreateStreamMarker(ctx context.Context, params *CreateStreamMarkerParams, opts ...Option) (*CreateStreamMarkerResponse, error) {
+	resp, err := c.post(ctx, "/streams/markers", &ManyCreateStreamMarkers{}, params, opts)
 	if err != nil {
 		return nil, err
 	}

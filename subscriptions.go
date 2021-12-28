@@ -1,5 +1,7 @@
 package helix
 
+import "context"
+
 type Subscription struct {
 	BroadcasterID    string `json:"broadcaster_id"`
 	BroadcasterLogin string `json:"broadcaster_login"`
@@ -63,8 +65,8 @@ type UserSubscriptionsParams struct {
 // Broadcasters can only request their own subscriptions.
 //
 // Required scope: channel:read:subscriptions
-func (c *Client) GetSubscriptions(params *SubscriptionsParams, opts ...Options) (*SubscriptionsResponse, error) {
-	resp, err := c.get("/subscriptions", &ManySubscriptions{}, params, opts...)
+func (c *Client) GetSubscriptions(ctx context.Context, params *SubscriptionsParams, opts ...Option) (*SubscriptionsResponse, error) {
+	resp, err := c.get(ctx, "/subscriptions", &ManySubscriptions{}, params, opts)
 	if err != nil {
 		return nil, err
 	}
@@ -82,8 +84,8 @@ func (c *Client) GetSubscriptions(params *SubscriptionsParams, opts ...Options) 
 // CheckUserSubscription Check if a specific user is subscribed to a specific channel
 //
 // Required scope: user:read:subscriptions
-func (c *Client) CheckUserSubscription(params *UserSubscriptionsParams, opts ...Options) (*UserSubscriptionResponse, error) {
-	resp, err := c.get("/subscriptions/user", &ManyUserSubscriptions{}, params, opts...)
+func (c *Client) CheckUserSubscription(ctx context.Context, params *UserSubscriptionsParams, opts ...Option) (*UserSubscriptionResponse, error) {
+	resp, err := c.get(ctx, "/subscriptions/user", &ManyUserSubscriptions{}, params, opts)
 	if err != nil {
 		return nil, err
 	}

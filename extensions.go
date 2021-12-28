@@ -1,6 +1,9 @@
 package helix
 
-import "fmt"
+import (
+	"context"
+	"fmt"
+)
 
 type ExtensionTransaction struct {
 	ID               string `json:"id"`
@@ -83,8 +86,8 @@ type ExtensionLiveChannelsResponse struct {
 // exchanging Bits for an in-Extension digital good.
 //
 // See https://dev.twitch.tv/docs/api/reference/#get-extension-transactions
-func (c *Client) GetExtensionTransactions(params *ExtensionTransactionsParams, opts ...Options) (*ExtensionTransactionsResponse, error) {
-	resp, err := c.get("/extensions/transactions", &ManyExtensionTransactions{}, params, opts...)
+func (c *Client) GetExtensionTransactions(ctx context.Context, params *ExtensionTransactionsParams, opts ...Option) (*ExtensionTransactionsResponse, error) {
+	resp, err := c.get(ctx, "/extensions/transactions", &ManyExtensionTransactions{}, params, opts)
 	if err != nil {
 		return nil, err
 	}
@@ -101,7 +104,7 @@ func (c *Client) GetExtensionTransactions(params *ExtensionTransactionsParams, o
 // The author of the message is the Extension name.
 //
 // see https://dev.twitch.tv/docs/api/reference#send-extension-chat-message
-func (c *Client) SendExtensionChatMessage(params *ExtensionSendChatMessageParams, opts ...Options) (*ExtensionSendChatMessageResponse, error) {
+func (c *Client) SendExtensionChatMessage(ctx context.Context, params *ExtensionSendChatMessageParams, opts ...Option) (*ExtensionSendChatMessageResponse, error) {
 
 	if len(params.Text) > 280 {
 		return nil, fmt.Errorf("error: chat message length exceeds 280 characters")
@@ -111,7 +114,7 @@ func (c *Client) SendExtensionChatMessage(params *ExtensionSendChatMessageParams
 		return nil, fmt.Errorf("error: broadcaster ID must be specified")
 	}
 
-	resp, err := c.postAsJSON("/extensions/chat", &ExtensionSendChatMessageResponse{}, params, opts...)
+	resp, err := c.postAsJSON(ctx, "/extensions/chat", &ExtensionSendChatMessageResponse{}, params, opts)
 	if err != nil {
 		return nil, err
 	}
@@ -122,13 +125,12 @@ func (c *Client) SendExtensionChatMessage(params *ExtensionSendChatMessageParams
 	return sndExtMsgResp, nil
 }
 
-func (c *Client) GetExtensionLiveChannels(params *ExtensionLiveChannelsParams) (*ExtensionLiveChannelsResponse, error) {
-
+func (c *Client) GetExtensionLiveChannels(ctx context.Context, params *ExtensionLiveChannelsParams, opts ...Option) (*ExtensionLiveChannelsResponse, error) {
 	if params.ExtensionID == "" {
 		return nil, fmt.Errorf("error: extension ID must be specified")
 	}
 
-	resp, err := c.get("/extensions/live", &ManyExtensionLiveChannels{}, params)
+	resp, err := c.get(ctx, "/extensions/live", &ManyExtensionLiveChannels{}, params, opts)
 	if err != nil {
 		return nil, err
 	}

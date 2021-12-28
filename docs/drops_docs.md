@@ -7,16 +7,16 @@
 This is an example of how to get entitlements for all users of a game.
 
 ```go
-client, err := helix.NewClient(&helix.Options{
-    ClientID: "your-client-id",
-})
+client, err := helix.NewClient(context.Background()
+    helix.WithClientID("your-client-id"),
+)
 if err != nil {
     // handle error
 }
 
-resp, err := client.GetDropsEntitlements(&helix.GetDropEntitlementsParams{
+resp, err := client.GetDropsEntitlements(context.Background(), &helix.GetDropEntitlementsParams{
 	GameID: "your-game-id",
-})
+)
 if err != nil {
     // handle error
 }
@@ -29,16 +29,16 @@ fmt.Printf("%+v\n", resp)
 This is an example of how to get entitlements for a specific user.
 
 ```go
-client, err := helix.NewClient(&helix.Options{
-    ClientID: "your-client-id",
-})
+client, err := helix.NewClient(context.Background()
+    helix.WithClientID("your-client-id"),
+)
 if err != nil {
     // handle error
 }
 
-resp, err := client.GetDropsEntitlements(&helix.GetDropEntitlementsParams{
+resp, err := client.GetDropsEntitlements(context.Background(), &helix.GetDropEntitlementsParams{
 	UserID: "your-game-id",
-})
+)
 if err != nil {
     // handle error
 }
@@ -51,19 +51,19 @@ fmt.Printf("%+v\n", resp)
 This is an example of how to get multiple pages of entitlement results.
 
 ```go
-client, err := helix.NewClient(&helix.Options{
-    ClientID: "your-client-id",
-})
+client, err := helix.NewClient(context.Background()
+    helix.WithClientID("your-client-id"),
+)
 if err != nil {
     // handle error
 }
 
 // First page 
-resp, err := client.GetDropsEntitlements(&helix.GetDropEntitlementsParams{
+resp, err := client.GetDropsEntitlements(context.Background(), &helix.GetDropEntitlementsParams{
 	GameID: "your-game-id",
     After: "",
     First: 50,
-})
+)
 if err != nil {
     // handle error
 }
@@ -71,11 +71,11 @@ if err != nil {
 fmt.Printf("%+v\n", resp)
 
 // Next page
-resp, err = client.GetDropsEntitlements(&helix.GetDropEntitlementsParams{
+resp, err = client.GetDropsEntitlements(context.Background(), &helix.GetDropEntitlementsParams{
 	GameID: "your-game-id",
     After: resp.Data.Pagination.Cursor,
     First: 50,
-})
+)
 if err != nil {
     // handle error
 }
@@ -88,17 +88,17 @@ fmt.Printf("%+v\n", resp)
 This is an example of how to get entitlements for a specific fulfillment status.
 
 ```go
-client, err := helix.NewClient(&helix.Options{
-    ClientID: "your-client-id",
-})
+client, err := helix.NewClient(context.Background()
+    helix.WithClientID("your-client-id"),
+)
 if err != nil {
     // handle error
 }
 
-resp, err := client.GetDropsEntitlements(&helix.GetDropEntitlementsParams{
+resp, err := client.GetDropsEntitlements(context.Background(), &helix.GetDropEntitlementsParams{
 	UserID: "your-game-id",
     FulfillmentStatus: "CLAIMED"
-})
+)
 if err != nil {
     // handle error
 }
@@ -113,17 +113,17 @@ fmt.Printf("%+v\n", resp)
 This is an example of how to update drops entitlements status.
 
 ```go
-client, err := helix.NewClient(&helix.Options{
-    ClientID: "your-client-id",
-})
+client, err := helix.NewClient(context.Background()
+    helix.WithClientID("your-client-id"),
+)
 if err != nil {
     // handle error
 }
 
-resp, err := client.UpdateDropsEntitlements(&helix.UpdateDropsEntitlementsParams{
+resp, err := client.UpdateDropsEntitlements(context.Background(), &helix.UpdateDropsEntitlementsParams{
 	EntitlementIDs: ["entitlement-id-1", "entitlement-id-2"],
 	FulfillmentStatus: "FULFILLED",
-})
+)
 if err != nil {
     // handle error
 }

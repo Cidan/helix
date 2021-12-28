@@ -5,20 +5,20 @@
 This is an example of how to get videos.
 
 ```go
-client, err := helix.NewClient(&helix.Options{
-    ClientID: "your-client-id",
-})
+client, err := helix.NewClient(context.Background()
+    helix.WithClientID("your-client-id"),
+)
 if err != nil {
     // handle error
 }
 
-resp, err := client.GetVideos(&helix.VideosParams{
+resp, err := client.GetVideos(context.Background(), &helix.VideosParams{
     GameID: "21779",
     Period: "month",
     Type:   "highlight",
     Sort:   "views",
     First:  10,
-})
+)
 if err != nil {
     // handle error
 }
@@ -31,16 +31,16 @@ fmt.Printf("%+v\n", resp)
 This is an example of how to delete videos.
 
 ```go
-client, err := helix.NewClient(&helix.Options{
-    ClientID: "your-client-id",
-})
+client, err := helix.NewClient(context.Background()
+    helix.WithClientID("your-client-id"),
+)
 if err != nil {
     // handle error
 }
 
-resp, err := client.DeleteVideos(&helix.DeleteVideosParams{
+resp, err := client.DeleteVideos(context.Background(), &helix.DeleteVideosParams{
     IDs: []string{"992599293"},
-})
+)
 if err != nil {
     // handle error
 }

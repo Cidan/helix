@@ -1,5 +1,7 @@
 package helix
 
+import "context"
+
 type HeldMessageModerationResponse struct {
 	ResponseCommon
 }
@@ -11,8 +13,8 @@ type HeldMessageModerationParams struct {
 }
 
 // Required scope: moderator:manage:automod
-func (c *Client) ModerateHeldMessage(params *HeldMessageModerationParams, opts ...Options) (*HeldMessageModerationResponse, error) {
-	resp, err := c.postAsJSON("/moderation/automod/message", nil, params, opts...)
+func (c *Client) ModerateHeldMessage(ctx context.Context, params *HeldMessageModerationParams, opts ...Option) (*HeldMessageModerationResponse, error) {
+	resp, err := c.postAsJSON(ctx, "/moderation/automod/message", nil, params, opts)
 	if err != nil {
 		return nil, err
 	}

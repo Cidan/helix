@@ -74,7 +74,7 @@ func (c *Client) ExtensionCreateClaims(
 	}
 
 	claims := &TwitchJWTClaims{
-		UserID:      c.opts.ExtensionOpts.OwnerUserID,
+		UserID:      c.opts.extensionOpts.OwnerUserID,
 		ChannelID:   params.ChannelID,
 		Role:        ExternalRole,
 		Permissions: params.PubSub,
@@ -96,7 +96,7 @@ func (c *Client) ExtensionJWTSign(claims *TwitchJWTClaims) (tokenString string, 
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 
-	key, err := base64.StdEncoding.DecodeString(c.opts.ExtensionOpts.Secret)
+	key, err := base64.StdEncoding.DecodeString(c.opts.extensionOpts.Secret)
 	if err != nil {
 		return
 	}
@@ -127,7 +127,7 @@ func (c *Client) ExtensionJWTVerify(token string) (claims *TwitchJWTClaims, err 
 			return nil, fmt.Errorf("Unexpected signing method: %s", tkn.Header["alg"])
 		}
 
-		key, err := base64.StdEncoding.DecodeString(c.opts.ExtensionOpts.Secret)
+		key, err := base64.StdEncoding.DecodeString(c.opts.extensionOpts.Secret)
 
 		if err != nil {
 			return nil, err
@@ -148,11 +148,11 @@ func (c *Client) ExtensionJWTVerify(token string) (claims *TwitchJWTClaims, err 
 }
 
 func (c *Client) validateExtensionOpts() error {
-	if c.opts.ExtensionOpts.OwnerUserID == "" {
+	if c.opts.extensionOpts.OwnerUserID == "" {
 		return fmt.Errorf("extension owner id is empty")
 	}
 
-	if c.opts.ExtensionOpts.Secret == "" {
+	if c.opts.extensionOpts.Secret == "" {
 		return fmt.Errorf("extension secret is empty")
 	}
 

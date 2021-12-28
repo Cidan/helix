@@ -9,15 +9,16 @@ can be used to generate access tokens for API consumption. See the Twitch
 [authentication docs](https://dev.twitch.tv/docs/authentication) for more information.
 
 ```go
-client, err := helix.NewClient(&helix.Options{
-    ClientID:    "your-client-id",
-    RedirectURI: "https://example.com/auth/callback",
-})
+client, err := helix.NewClient(
+    context.Background(),
+    WithClientID("your-client-id"),
+    WithRedirectURI("https://example.com/auth/callback"),
+)
 if err != nil {
     // handle error
 }
 
-url := client.GetAuthorizationURL(&helix.AuthorizationURLParams{
+url := client.GetAuthorizationURL(context.Background(), &helix.AuthorizationURLParams{
     ResponseType: "code", // or "token"
     Scopes:       []string{"user:read:email"},
     State:        "some-state",
@@ -34,18 +35,18 @@ then be used to submit API requests on behalf of a user. Here's an example of ho
 access token:
 
 ```go
-client, err := helix.NewClient(&helix.Options{
-    ClientID:     "your-client-id",
-    ClientSecret: "your-client-secret",
-    RedirectURI:  "https://example.com/auth/callback",
-})
+client, err := helix.NewClient(
+    helix.WithClientID("your-client-id"),
+    helix.WithClientSecret("your-client-secret"),
+    helix.WithRedirectURI("https://example.com/auth/callback"),
+)
 if err != nil {
     // handle error
 }
 
 code := "your-authentication-code"
 
-resp, err := client.RequestUserAccessToken(code)
+resp, err := client.RequestUserAccessToken(context.Background(), code)
 if err != nil {
     // handle error
 }
@@ -61,17 +62,17 @@ client.SetUserAccessToken(resp.Data.AccessToken)
 You can refresh a user access token in the following manner:
 
 ```go
-client, err := helix.NewClient(&helix.Options{
-    ClientID:     "your-client-id",
-    ClientSecret: "your-client-secret",
-})
+client, err := helix.NewClient(
+    helix.WithClientID("your-client-id"),
+    helix.WithClientSecret("your-client-secret"),
+)
 if err != nil {
     // handle error
 }
 
 refreshToken := "your-refresh-token"
 
-resp, err := client.RefreshUserAccessToken(refreshToken)
+resp, err := client.RefreshUserAccessToken(context.Background(), refreshToken)
 if err != nil {
     // handle error
 }
@@ -85,15 +86,15 @@ You can revoke a user access token in the following manner:
 
 ```go
 client, err := helix.NewClient(&helix.Options{
-    ClientID: "your-client-id",
-})
+    helix.WithClientID("your-client-id"),
+)
 if err != nil {
     // handle error
 }
 
 userAccessToken := client.GetUserAccessToken()
 
-resp, err := client.RevokeUserAccessToken(userAccessToken)
+resp, err := client.RevokeUserAccessToken(context.Background(), userAccessToken)
 if err != nil {
     // handle error
 }
@@ -106,16 +107,16 @@ fmt.Printf("%+v\n", resp)
 You can validate an access token and get token details in the following manner:
 
 ```go
-client, err := helix.NewClient(&helix.Options{
-    ClientID: "your-client-id",
-})
+client, err := helix.NewClient(context.Background()
+    helix.WithClientID("your-client-id"),
+)
 if err != nil {
     // handle error
 }
 
 userAccessToken := client.GetUserAccessToken()
 
-isValid, resp, err := client.ValidateToken(userAccessToken)
+isValid, resp, err := client.ValidateToken(context.Background(), userAccessToken)
 if err != nil {
     // handle error
 }
@@ -133,20 +134,17 @@ Here's an example of how to create an app access token:
 
 ```go
 client, err := helix.NewClient(&helix.Options{
-    ClientID:     "your-client-id",
-    ClientSecret: "your-client-secret",
-})
+    helix.WithClientID("your-client-id"),
+    helix.WithClientSecret("your-client-secret"),
+)
 if err != nil {
     // handle error
 }
 
-resp, err := client.RequestAppAccessToken([]string{"user:read:email"})
+resp, err := client.RequestAppAccessToken(context.Background(), []string{"user:read:email"})
 if err != nil {
     // handle error
 }
 
 fmt.Printf("%+v\n", resp)
-
-// Set the access token on the client
-client.SetAppAccessToken(resp.Data.AccessToken)
 ```

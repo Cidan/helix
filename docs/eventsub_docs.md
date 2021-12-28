@@ -9,17 +9,17 @@ In contrary to webhooks, eventsub subscriptions do not expire based on time. The
 This is an example of how to get eventsub subscriptions.
 
 ```go
-client, err := helix.NewClient(&helix.Options{
-    ClientID: "your-client-id",
-    AppAccessToken: "your-app-access-token",
-})
+client, err := helix.NewClient(context.Background()
+    helix.WithClientID("your-client-id"),
+    helix.WithAppAccessToken("your-app-access-token"),
+)
 if err != nil {
     // handle error
 }
 
-resp, err := client.GetEventSubSubscriptions(&helix.EventSubSubscriptionsParams{
+resp, err := client.GetEventSubSubscriptions(context.Background(), &helix.EventSubSubscriptionsParams{
     Status: helix.EventSubStatusEnabled, // This is optional.
-})
+)
 if err != nil {
     // handle error
 }
@@ -33,15 +33,15 @@ To create a subscription call CreateEventSubSubscription with a pointer to a sub
 Within the Transport the only supported Method currently is "webhook". Callback needs to be a https link on port 443. With the secret you can verify if notifications came from twitch. See (#verify-eventSub-notification)
 
 ```go
-client, err := helix.NewClient(&helix.Options{
-    ClientID: "your-client-id",
-    AppAccessToken: "your-app-access-token",
-})
+client, err := helix.NewClient(context.Background()
+    helix.WithClientID("your-client-id"),
+    helix.WithAppAccessToken("your-app-access-token"),
+)
 if err != nil {
     // handle error
 }
 
-resp, err := client.CreateEventSubSubscription(&helix.EventSubSubscription{
+resp, err := client.CreateEventSubSubscription(context.Background(), &helix.EventSubSubscription{
     Type: helix.EventSubTypeChannelFollow,
     Version: "1",
     Condition: helix.EventSubCondition{
@@ -52,7 +52,7 @@ resp, err := client.CreateEventSubSubscription(&helix.EventSubSubscription{
         Callback: "https://example.com/follow",
         Secret: "s3cre7w0rd",
     },
-})
+)
 if err != nil {
     // handle error
 }
@@ -65,10 +65,10 @@ fmt.Printf("%+v\n", resp)
 To delete a subscription you need to call RemoveEventSubSubscription with the subscription id as parameter.
 
 ```go
-client, err := helix.NewClient(&helix.Options{
-    ClientID: "your-client-id",
-    AppAccessToken: "your-app-access-token",
-})
+client, err := helix.NewClient(context.Background()
+    helix.WithClientID("your-client-id"),
+    helix.WithAppAccessToken("your-app-access-token"),
+)
 if err != nil {
     // handle error
 }

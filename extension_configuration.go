@@ -1,6 +1,9 @@
 package helix
 
-import "fmt"
+import (
+	"context"
+	"fmt"
+)
 
 // SegmentType A segment configuration type
 type ExtensionSegmentType string
@@ -63,7 +66,7 @@ type ExtensionSetConfigurationResponse struct {
 }
 
 // https://dev.twitch.tv/docs/extensions/reference/#set-extension-configuration-segment
-func (c *Client) SetExtensionSegmentConfig(params *ExtensionSetConfigurationParams, opts ...Options) (*ExtensionSetConfigurationResponse, error) {
+func (c *Client) SetExtensionSegmentConfig(ctx context.Context, params *ExtensionSetConfigurationParams, opts ...Option) (*ExtensionSetConfigurationResponse, error) {
 	if params.BroadcasterID != "" {
 		switch params.Segment {
 		case ExtensionConfigurationDeveloperSegment, ExtensionConfigrationBroadcasterSegment:
@@ -72,7 +75,7 @@ func (c *Client) SetExtensionSegmentConfig(params *ExtensionSetConfigurationPara
 		}
 	}
 
-	resp, err := c.putAsJSON("/extensions/configurations", &ManyPolls{}, params, opts...)
+	resp, err := c.putAsJSON(ctx, "/extensions/configurations", &ManyPolls{}, params, opts)
 	if err != nil {
 		return nil, err
 	}
@@ -83,7 +86,7 @@ func (c *Client) SetExtensionSegmentConfig(params *ExtensionSetConfigurationPara
 	return setExtCnfgResp, nil
 }
 
-func (c *Client) GetExtensionConfigurationSegment(params *ExtensionGetConfigurationParams, opts ...Options) (*ExtensionGetConfigurationSegmentResponse, error) {
+func (c *Client) GetExtensionConfigurationSegment(ctx context.Context, params *ExtensionGetConfigurationParams, opts ...Option) (*ExtensionGetConfigurationSegmentResponse, error) {
 
 	if params.BroadcasterID != "" {
 		for _, segment := range params.Segments {
@@ -95,7 +98,7 @@ func (c *Client) GetExtensionConfigurationSegment(params *ExtensionGetConfigurat
 		}
 	}
 
-	resp, err := c.get("/extensions/configurations", &ManyExtensionConfigurationSegments{}, params, opts...)
+	resp, err := c.get(ctx, "/extensions/configurations", &ManyExtensionConfigurationSegments{}, params, opts)
 	if err != nil {
 		return nil, err
 	}
@@ -107,9 +110,9 @@ func (c *Client) GetExtensionConfigurationSegment(params *ExtensionGetConfigurat
 	return extCfgSegResp, nil
 }
 
-func (c *Client) SetExtensionRequiredConfiguration(params *ExtensionSetRequiredConfigurationParams, opts ...Options) (*ExtensionSetRequiredConfigurationResponse, error) {
+func (c *Client) SetExtensionRequiredConfiguration(ctx context.Context, params *ExtensionSetRequiredConfigurationParams, opts ...Option) (*ExtensionSetRequiredConfigurationResponse, error) {
 
-	resp, err := c.putAsJSON("/extensions/configurations/required_configuration", &ExtensionSetRequiredConfigurationResponse{}, params, opts...)
+	resp, err := c.putAsJSON(ctx, "/extensions/configurations/required_configuration", &ExtensionSetRequiredConfigurationResponse{}, params, opts)
 	if err != nil {
 		return nil, err
 	}

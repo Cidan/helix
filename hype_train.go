@@ -1,5 +1,7 @@
 package helix
 
+import "context"
+
 type HypeTrainContribuition struct {
 	Total int64  `json:"total"`
 	Type  string `json:"type"`
@@ -45,8 +47,8 @@ type HypeTrainEventsParams struct {
 }
 
 // Required scope: channel:read:hype_train
-func (c *Client) GetHypeTrainEvents(params *HypeTrainEventsParams, opts ...Options) (*HypeTrainEventsResponse, error) {
-	resp, err := c.get("/hypetrain/events", &ManyHypeTrainEvents{}, params, opts...)
+func (c *Client) GetHypeTrainEvents(ctx context.Context, params *HypeTrainEventsParams, opts ...Option) (*HypeTrainEventsResponse, error) {
+	resp, err := c.get(ctx, "/hypetrain/events", &ManyHypeTrainEvents{}, params, opts)
 	if err != nil {
 		return nil, err
 	}

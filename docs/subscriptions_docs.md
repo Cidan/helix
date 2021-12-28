@@ -5,17 +5,17 @@
 This is an example of how to get the broadcaster subscriptions.
 
 ```go
-client, err := helix.NewClient(&helix.Options{
+client, err := helix.NewClient(context.Background()
     ClientID:        "your-client-id",
     UserAccessToken: "your-user-access-token",
-})
+)
 if err != nil {
     // handle error
 }
 
-resp, err := client.GetSubscriptions(&helix.SubscriptionsParams{
+resp, err := client.GetSubscriptions(context.Background(), &helix.SubscriptionsParams{
     BroadcasterID:  "29776980",
-})
+)
 if err != nil {
     // handle error
 }
@@ -28,18 +28,18 @@ fmt.Printf("%+v\n", resp)
 This is an example of how to check if a user is subscribed to a broadcaster.
 
 ```go
-client, err := helix.NewClient(&helix.Options{
+client, err := helix.NewClient(context.Background()
     ClientID:        "your-client-id",
     UserAccessToken: "your-user-access-token",
-})
+)
 if err != nil {
     // handle error
 }
 
-resp, err := client.CheckUserSubscription(&helix.UserSubscriptionsParams{
+resp, err := client.CheckUserSubscription(context.Background(), &helix.UserSubscriptionsParams{
     BroadcasterID: "29776980",
     UserID:        "145328278",
-})
+)
 if err != nil {
     // handle error
 }

@@ -1,5 +1,7 @@
 package helix
 
+import "context"
+
 type Clip struct {
 	ID              string  `json:"id"`
 	URL             string  `json:"url"`
@@ -43,8 +45,8 @@ type ClipsParams struct {
 }
 
 // GetClips returns information about a specified clip.
-func (c *Client) GetClips(params *ClipsParams, opts ...Options) (*ClipsResponse, error) {
-	resp, err := c.get("/clips", &ManyClips{}, params, opts...)
+func (c *Client) GetClips(ctx context.Context, params *ClipsParams, opts ...Option) (*ClipsResponse, error) {
+	resp, err := c.get(ctx, "/clips", &ManyClips{}, params, opts)
 	if err != nil {
 		return nil, err
 	}
@@ -98,8 +100,8 @@ type CreateClipParams struct {
 // clip was not created and retry Create Clip.
 //
 // Required scope: clips:edit
-func (c *Client) CreateClip(params *CreateClipParams, opts ...Options) (*CreateClipResponse, error) {
-	resp, err := c.post("/clips", &ManyClipEditURLs{}, params, opts...)
+func (c *Client) CreateClip(ctx context.Context, params *CreateClipParams, opts ...Option) (*CreateClipResponse, error) {
+	resp, err := c.post(ctx, "/clips", &ManyClipEditURLs{}, params, opts)
 	if err != nil {
 		return nil, err
 	}

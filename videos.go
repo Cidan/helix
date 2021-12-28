@@ -1,5 +1,7 @@
 package helix
 
+import "context"
+
 type Video struct {
 	ID            string              `json:"id"`
 	UserID        string              `json:"user_id"`
@@ -60,8 +62,8 @@ type DeleteVideosResponse struct {
 
 // GetVideos gets video information by video ID (one or more), user ID (one only),
 // or game ID (one only).
-func (c *Client) GetVideos(params *VideosParams, opts ...Options) (*VideosResponse, error) {
-	resp, err := c.get("/videos", &ManyVideos{}, params, opts...)
+func (c *Client) GetVideos(ctx context.Context, params *VideosParams, opts ...Option) (*VideosResponse, error) {
+	resp, err := c.get(ctx, "/videos", &ManyVideos{}, params, opts)
 	if err != nil {
 		return nil, err
 	}
@@ -76,8 +78,8 @@ func (c *Client) GetVideos(params *VideosParams, opts ...Options) (*VideosRespon
 
 // DeleteVideos delete one or more videos (max 5)
 // Required scope: channel:manage:videos
-func (c *Client) DeleteVideos(params *DeleteVideosParams, opts ...Options) (*DeleteVideosResponse, error) {
-	resp, err := c.delete("/videos", &DeleteVideosResponse{}, params, opts...)
+func (c *Client) DeleteVideos(ctx context.Context, params *DeleteVideosParams, opts ...Option) (*DeleteVideosResponse, error) {
+	resp, err := c.delete(ctx, "/videos", &DeleteVideosResponse{}, params, opts)
 	if err != nil {
 		return nil, err
 	}

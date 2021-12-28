@@ -1,5 +1,7 @@
 package helix
 
+import "context"
+
 type Goal struct {
 	ID               string `json:"id"`
 	BroadcasterID    string `json:"broadcaster_id"`
@@ -27,8 +29,8 @@ type GetCreatorGoalsParams struct {
 }
 
 // Required scope: channel:read:goals
-func (c *Client) GetCreatorGoals(payload *GetCreatorGoalsParams, opts ...Options) (*CreatorGoalsResponse, error) {
-	resp, err := c.get("/goals", &ManyGoals{}, payload, opts...)
+func (c *Client) GetCreatorGoals(ctx context.Context, payload *GetCreatorGoalsParams, opts ...Option) (*CreatorGoalsResponse, error) {
+	resp, err := c.get(ctx, "/goals", &ManyGoals{}, payload, opts)
 	if err != nil {
 		return nil, err
 	}

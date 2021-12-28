@@ -1,5 +1,7 @@
 package helix
 
+import "context"
+
 // ExpiresAt must be parsed manually since an empty string means perma ban
 type Ban struct {
 	UserID    string `json:"user_id"`
@@ -29,8 +31,8 @@ type BannedUsersParams struct {
 // GetBannedUsers returns all banned and timed-out users in a channel.
 //
 // Required scope: moderation:read
-func (c *Client) GetBannedUsers(params *BannedUsersParams, opts ...Options) (*BannedUsersResponse, error) {
-	resp, err := c.get("/moderation/banned", &ManyBans{}, params, opts...)
+func (c *Client) GetBannedUsers(ctx context.Context, params *BannedUsersParams, opts ...Option) (*BannedUsersResponse, error) {
+	resp, err := c.get(ctx, "/moderation/banned", &ManyBans{}, params, opts)
 	if err != nil {
 		return nil, err
 	}

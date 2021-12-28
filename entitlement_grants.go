@@ -1,5 +1,7 @@
 package helix
 
+import "context"
+
 type entitlementUploadURLRequest struct {
 	ManifestID string `query:"manifest_id"`
 	Type       string `query:"type"`
@@ -22,13 +24,13 @@ type EntitlementsUploadResponse struct {
 // file and notify users that they have an entitlement. Entitlements are digital
 // items that users are entitled to use. Twitch entitlements are granted to users
 // gratis or as part of a purchase on Twitch.
-func (c *Client) CreateEntitlementsUploadURL(manifestID, entitlementType string, opts ...Options) (*EntitlementsUploadResponse, error) {
+func (c *Client) CreateEntitlementsUploadURL(ctx context.Context, manifestID, entitlementType string, opts ...Option) (*EntitlementsUploadResponse, error) {
 	data := &entitlementUploadURLRequest{
 		ManifestID: manifestID,
 		Type:       entitlementType,
 	}
 
-	resp, err := c.post("/entitlements/upload", &ManyEntitlementsUploadURLs{}, data, opts...)
+	resp, err := c.post(ctx, "/entitlements/upload", &ManyEntitlementsUploadURLs{}, data, opts)
 	if err != nil {
 		return nil, err
 	}

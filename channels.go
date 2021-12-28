@@ -1,5 +1,7 @@
 package helix
 
+import "context"
+
 // SearchChannelsParams is parameters for SearchChannels
 type SearchChannelsParams struct {
 	Channel  string `query:"query"`
@@ -37,8 +39,8 @@ type SearchChannelsResponse struct {
 
 // SearchChannels searches for Twitch channels based on the given search
 // parameters. Unlike GetStreams, this can also return offline channels.
-func (c *Client) SearchChannels(params *SearchChannelsParams, opts ...Options) (*SearchChannelsResponse, error) {
-	resp, err := c.get("/search/channels", &ManySearchChannels{}, params, opts...)
+func (c *Client) SearchChannels(ctx context.Context, params *SearchChannelsParams, opts ...Option) (*SearchChannelsResponse, error) {
+	resp, err := c.get(ctx, "/search/channels", &ManySearchChannels{}, params, opts)
 	if err != nil {
 		return nil, err
 	}
@@ -88,8 +90,8 @@ type ChannelInformation struct {
 	Delay               int    `json:"delay"`
 }
 
-func (c *Client) GetChannelInformation(params *GetChannelInformationParams, opts ...Options) (*GetChannelInformationResponse, error) {
-	resp, err := c.get("/channels", &ManyChannelInformation{}, params, opts...)
+func (c *Client) GetChannelInformation(ctx context.Context, params *GetChannelInformationParams, opts ...Option) (*GetChannelInformationResponse, error) {
+	resp, err := c.get(ctx, "/channels", &ManyChannelInformation{}, params, opts)
 	if err != nil {
 		return nil, err
 	}
@@ -101,8 +103,8 @@ func (c *Client) GetChannelInformation(params *GetChannelInformationParams, opts
 	return channels, nil
 }
 
-func (c *Client) EditChannelInformation(params *EditChannelInformationParams, opts ...Options) (*EditChannelInformationResponse, error) {
-	resp, err := c.patchAsJSON("/channels", &EditChannelInformationResponse{}, params, opts...)
+func (c *Client) EditChannelInformation(ctx context.Context, params *EditChannelInformationParams, opts ...Option) (*EditChannelInformationResponse, error) {
+	resp, err := c.patchAsJSON(ctx, "/channels", &EditChannelInformationResponse{}, params, opts)
 	if err != nil {
 		return nil, err
 	}

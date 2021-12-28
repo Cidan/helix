@@ -1,5 +1,7 @@
 package helix
 
+import "context"
+
 // PublishType The Pub/Sub broadcast type
 type ExtensionPubSubPublishType string
 
@@ -61,8 +63,8 @@ type ExtensionSendPubSubMessageResponse struct {
 	ResponseCommon
 }
 
-func (c *Client) SendExtensionPubSubMessage(params *ExtensionSendPubSubMessageParams, opts ...Options) (*ExtensionSendPubSubMessageResponse, error) {
-	resp, err := c.postAsJSON("/extensions/pubsub", &ExtensionSendPubSubMessageResponse{}, params, opts...)
+func (c *Client) SendExtensionPubSubMessage(ctx context.Context, params *ExtensionSendPubSubMessageParams, opts ...Option) (*ExtensionSendPubSubMessageResponse, error) {
+	resp, err := c.postAsJSON(ctx, "/extensions/pubsub", &ExtensionSendPubSubMessageResponse{}, params, opts)
 	if err != nil {
 		return nil, err
 	}

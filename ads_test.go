@@ -1,6 +1,7 @@
 package helix
 
 import (
+	"context"
 	"net/http"
 	"testing"
 )
@@ -22,7 +23,7 @@ func TestClient_StartCommercial(t *testing.T) {
 		// Failure - broadcaster not live
 		{
 			http.StatusBadRequest,
-			&Options{ClientID: "my-client-id"},
+			&Options{clientID: "my-client-id"},
 			1,
 			"89754791",
 			AdLen30,
@@ -32,7 +33,7 @@ func TestClient_StartCommercial(t *testing.T) {
 		// success
 		{
 			http.StatusOK,
-			&Options{ClientID: "my-client-id"},
+			&Options{clientID: "my-client-id"},
 			1,
 			"41245072",
 			AdLen60,
@@ -49,7 +50,7 @@ func TestClient_StartCommercial(t *testing.T) {
 			Length:        testCase.adLength,
 		}
 
-		resp, err := c.StartCommercial(params)
+		resp, err := c.StartCommercial(context.Background(), params)
 		if err != nil {
 			t.Error(err)
 		}
@@ -89,16 +90,16 @@ func TestClient_StartCommercial(t *testing.T) {
 
 	// Test with HTTP Failure
 	options := &Options{
-		ClientID: "my-client-id",
-		HTTPClient: &badMockHTTPClient{
+		clientID: "my-client-id",
+		httpDo: (&badMockHTTPClient{
 			newMockHandler(0, "", nil),
-		},
+		}).Do,
 	}
 	c := &Client{
 		opts: options,
 	}
 
-	_, err := c.StartCommercial(&StartCommercialParams{})
+	_, err := c.StartCommercial(context.Background(), &StartCommercialParams{})
 	if err == nil {
 		t.Error("expected error but got nil")
 	}

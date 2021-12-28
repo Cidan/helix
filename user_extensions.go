@@ -1,5 +1,7 @@
 package helix
 
+import "context"
+
 type UserExtension struct {
 	CanActivate bool     `json:"can_activate"`
 	ID          string   `json:"id"`
@@ -21,8 +23,8 @@ type UserExtensionsResponse struct {
 // identified by a Bearer token
 //
 // Required scope: user:read:broadcast
-func (c *Client) GetUserExtensions(opts ...Options) (*UserExtensionsResponse, error) {
-	resp, err := c.get("/users/extensions/list", &ManyUserExtensions{}, nil, opts...)
+func (c *Client) GetUserExtensions(ctx context.Context, opts ...Option) (*UserExtensionsResponse, error) {
+	resp, err := c.get(ctx, "/users/extensions/list", &ManyUserExtensions{}, nil, opts)
 	if err != nil {
 		return nil, err
 	}
@@ -66,8 +68,8 @@ type UserActiveExtensionsParams struct {
 // by a user ID or Bearer token.
 //
 // Optional scope: user:read:broadcast or user:edit:broadcast
-func (c *Client) GetUserActiveExtensions(params *UserActiveExtensionsParams, opts ...Options) (*UserActiveExtensionsResponse, error) {
-	resp, err := c.get("/users/extensions", &UserActiveExtensionSet{}, params, opts...)
+func (c *Client) GetUserActiveExtensions(ctx context.Context, params *UserActiveExtensionsParams, opts ...Option) (*UserActiveExtensionsResponse, error) {
+	resp, err := c.get(ctx, "/users/extensions", &UserActiveExtensionSet{}, params, opts)
 	if err != nil {
 		return nil, err
 	}
@@ -93,9 +95,9 @@ type wrappedUpdateUserExtensionsPayload struct {
 // If you try to activate a given extension under multiple extension types, the last write wins (and there is no guarantee of write order).
 //
 // Required scope: user:edit:broadcast
-func (c *Client) UpdateUserExtensions(payload *UpdateUserExtensionsPayload, opts ...Options) (*UserActiveExtensionsResponse, error) {
+func (c *Client) UpdateUserExtensions(ctx context.Context, payload *UpdateUserExtensionsPayload, opts ...Option) (*UserActiveExtensionsResponse, error) {
 	normalizedPayload := &wrappedUpdateUserExtensionsPayload{UpdateUserExtensionsPayload: *payload}
-	resp, err := c.putAsJSON("/users/extensions", &UserActiveExtensionSet{}, normalizedPayload, opts...)
+	resp, err := c.putAsJSON(ctx, "/users/extensions", &UserActiveExtensionSet{}, normalizedPayload, opts)
 	if err != nil {
 		return nil, err
 	}

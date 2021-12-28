@@ -1,6 +1,7 @@
 package helix
 
 import (
+	"context"
 	"crypto/hmac"
 	"crypto/sha256"
 	"encoding/hex"
@@ -567,8 +568,8 @@ type EventSubChannelGoalEndEvent struct {
 }
 
 // Get all EventSub Subscriptions
-func (c *Client) GetEventSubSubscriptions(params *EventSubSubscriptionsParams, opts ...Options) (*EventSubSubscriptionsResponse, error) {
-	resp, err := c.get("/eventsub/subscriptions", &ManyEventSubSubscriptions{}, params, opts...)
+func (c *Client) GetEventSubSubscriptions(ctx context.Context, params *EventSubSubscriptionsParams, opts ...Option) (*EventSubSubscriptionsResponse, error) {
+	resp, err := c.get(ctx, "/eventsub/subscriptions", &ManyEventSubSubscriptions{}, params, opts)
 	if err != nil {
 		return nil, err
 	}
@@ -584,9 +585,9 @@ func (c *Client) GetEventSubSubscriptions(params *EventSubSubscriptionsParams, o
 }
 
 // Remove an EventSub Subscription
-func (c *Client) RemoveEventSubSubscription(id string, opts ...Options) (*RemoveEventSubSubscriptionParamsResponse, error) {
+func (c *Client) RemoveEventSubSubscription(ctx context.Context, id string, opts ...Option) (*RemoveEventSubSubscriptionParamsResponse, error) {
 
-	resp, err := c.delete("/eventsub/subscriptions", nil, &RemoveEventSubSubscriptionParams{ID: id}, opts...)
+	resp, err := c.delete(ctx, "/eventsub/subscriptions", nil, &RemoveEventSubSubscriptionParams{ID: id}, opts)
 	if err != nil {
 		return nil, err
 	}
@@ -597,7 +598,7 @@ func (c *Client) RemoveEventSubSubscription(id string, opts ...Options) (*Remove
 }
 
 // Creates an EventSub subscription
-func (c *Client) CreateEventSubSubscription(payload *EventSubSubscription, opts ...Options) (*EventSubSubscriptionsResponse, error) {
+func (c *Client) CreateEventSubSubscription(ctx context.Context, payload *EventSubSubscription, opts ...Option) (*EventSubSubscriptionsResponse, error) {
 	if payload.Transport.Method == "webhook" && !strings.HasPrefix(payload.Transport.Callback, "https://") {
 		return nil, fmt.Errorf("error: callback must use https")
 	}
@@ -613,7 +614,7 @@ func (c *Client) CreateEventSubSubscription(payload *EventSubSubscription, opts 
 	if callbackUrl.Port() != "" && callbackUrl.Port() != "443" {
 		return nil, fmt.Errorf("error: callback must use port 443")
 	}
-	resp, err := c.postAsJSON("/eventsub/subscriptions", &ManyEventSubSubscriptions{}, payload, opts...)
+	resp, err := c.postAsJSON(ctx, "/eventsub/subscriptions", &ManyEventSubSubscriptions{}, payload, opts)
 	if err != nil {
 		return nil, err
 	}

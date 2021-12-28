@@ -1,6 +1,7 @@
 package helix
 
 import (
+	"context"
 	"net/http"
 	"strings"
 )
@@ -18,18 +19,16 @@ type AuthorizationURLParams struct {
 	ForceVerify  bool     // (Optional)
 }
 
-func (c *Client) GetAuthorizationURL(params *AuthorizationURLParams, opts ...Options) string {
-	var options Options
-	if len(opts) == 0 {
-		options = *c.opts
-	} else {
-		options = opts[0]
+func (c *Client) GetAuthorizationURL(ctx context.Context, params *AuthorizationURLParams, opts ...Option) string {
+	options, err := c.mergeOptions(opts)
+	if err != nil {
+		return ""
 	}
 
 	url := AuthBaseURL + "/authorize"
 	url += "?response_type=" + params.ResponseType
-	url += "&client_id=" + options.ClientID
-	url += "&redirect_uri=" + options.RedirectURI
+	url += "&client_id=" + options.clientID
+	url += "&redirect_uri=" + options.redirectURI
 
 	if params.State != "" {
 		url += "&state=" + params.State
@@ -58,23 +57,21 @@ type AppAccessTokenResponse struct {
 	Data AccessCredentials
 }
 
-func (c *Client) RequestAppAccessToken(scopes []string, opts ...Options) (*AppAccessTokenResponse, error) {
-	var options Options
-	if len(opts) == 0 {
-		options = *c.opts
-	} else {
-		options = opts[0]
+func (c *Client) RequestAppAccessToken(ctx context.Context, scopes []string, opts ...Option) (*AppAccessTokenResponse, error) {
+	options, err := c.mergeOptions(opts)
+	if err != nil {
+		return nil, err
 	}
 
 	data := &accessTokenRequestData{
-		ClientID:     options.ClientID,
-		ClientSecret: options.ClientSecret,
-		RedirectURI:  options.RedirectURI,
+		ClientID:     options.clientID,
+		ClientSecret: options.clientSecret,
+		RedirectURI:  options.redirectURI,
 		GrantType:    "client_credentials",
 		Scopes:       strings.Join(scopes, " "),
 	}
 
-	resp, err := c.post(authPaths["token"], &AccessCredentials{}, data)
+	resp, err := c.post(ctx, authPaths["token"], &AccessCredentials{}, data, opts)
 	if err != nil {
 		return nil, err
 	}
@@ -103,22 +100,21 @@ type accessTokenRequestData struct {
 	Scopes       string `query:"scope"`
 }
 
-func (c *Client) RequestUserAccessToken(code string, opts ...Options) (*UserAccessTokenResponse, error) {
-	var options Options
-	if len(opts) == 0 {
-		options = *c.opts
-	} else {
-		options = opts[0]
+func (c *Client) RequestUserAccessToken(ctx context.Context, code string, opts ...Option) (*UserAccessTokenResponse, error) {
+	options, err := c.mergeOptions(opts)
+	if err != nil {
+		return nil, err
 	}
+
 	data := &accessTokenRequestData{
 		Code:         code,
-		ClientID:     options.ClientID,
-		ClientSecret: options.ClientSecret,
-		RedirectURI:  options.RedirectURI,
+		ClientID:     options.clientID,
+		ClientSecret: options.clientSecret,
+		RedirectURI:  options.redirectURI,
 		GrantType:    "authorization_code",
 	}
 
-	resp, err := c.post(authPaths["token"], &AccessCredentials{}, data)
+	resp, err := c.post(ctx, authPaths["token"], &AccessCredentials{}, data, opts)
 	if err != nil {
 		return nil, err
 	}
@@ -149,21 +145,20 @@ type refreshTokenRequestData struct {
 // access token extended. Twitch OAuth2 access tokens have expirations.
 // Token-expiration periods vary in length. You should build your applications
 // in such a way that they are resilient to token authentication failures.
-func (c *Client) RefreshUserAccessToken(refreshToken string, opts ...Options) (*RefreshTokenResponse, error) {
-	var options Options
-	if len(opts) == 0 {
-		options = *c.opts
-	} else {
-		options = opts[0]
+func (c *Client) RefreshUserAccessToken(ctx context.Context, refreshToken string, opts ...Option) (*RefreshTokenResponse, error) {
+	options, err := c.mergeOptions(opts)
+	if err != nil {
+		return nil, err
 	}
+
 	data := &refreshTokenRequestData{
-		ClientID:     options.ClientID,
-		ClientSecret: options.ClientSecret,
+		ClientID:     options.clientID,
+		ClientSecret: options.clientSecret,
 		GrantType:    "refresh_token",
 		RefreshToken: refreshToken,
 	}
 
-	resp, err := c.post(authPaths["token"], &AccessCredentials{}, data)
+	resp, err := c.post(ctx, authPaths["token"], &AccessCredentials{}, data, opts)
 	if err != nil {
 		return nil, err
 	}
@@ -192,19 +187,18 @@ type revokeAccessTokenRequestData struct {
 // Both successful requests and requests with bad tokens return 200 OK with
 // no body. Requests with bad tokens return the same response, as there is no
 // meaningful action a client can take after sending a bad token.
-func (c *Client) RevokeUserAccessToken(accessToken string, opts ...Options) (*RevokeAccessTokenResponse, error) {
-	var options Options
-	if len(opts) == 0 {
-		options = *c.opts
-	} else {
-		options = opts[0]
+func (c *Client) RevokeUserAccessToken(ctx context.Context, accessToken string, opts ...Option) (*RevokeAccessTokenResponse, error) {
+	options, err := c.mergeOptions(opts)
+	if err != nil {
+		return nil, err
 	}
+
 	data := &revokeAccessTokenRequestData{
-		ClientID:    options.ClientID,
+		ClientID:    options.clientID,
 		AccessToken: accessToken,
 	}
 
-	resp, err := c.post(authPaths["revoke"], nil, data)
+	resp, err := c.post(ctx, authPaths["revoke"], nil, data, opts)
 	if err != nil {
 		return nil, err
 	}
@@ -228,13 +222,11 @@ type validateTokenDetails struct {
 }
 
 // ValidateToken - Validate access token
-func (c *Client) ValidateToken(accessToken string) (bool, *ValidateTokenResponse, error) {
-	opts := Options{
-		UserAccessToken: accessToken,
-	}
+func (c *Client) ValidateToken(ctx context.Context, accessToken string, opts ...Option) (bool, *ValidateTokenResponse, error) {
+	opts = append(opts, WithUserAccessToken(accessToken))
 
 	var data validateTokenDetails
-	resp, err := c.get(authPaths["validate"], &data, nil, opts)
+	resp, err := c.get(ctx, authPaths["validate"], &data, nil, opts)
 	if err != nil {
 		return false, nil, err
 	}

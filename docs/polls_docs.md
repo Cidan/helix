@@ -5,16 +5,16 @@
 This is an example of how to get polls.
 
 ```go
-client, err := helix.NewClient(&helix.Options{
-    ClientID: "your-client-id",
-})
+client, err := helix.NewClient(context.Background()
+    helix.WithClientID("your-client-id"),
+)
 if err != nil {
     // handle error
 }
 
-resp, err := client.GetPolls(&helix.PollsParams{
+resp, err := client.GetPolls(context.Background(), &helix.PollsParams{
     BroadcasterID: "145328278",
-})
+)
 if err != nil {
     // handle error
 }
@@ -27,14 +27,14 @@ fmt.Printf("%+v\n", resp)
 This is an example of how to create a poll.
 
 ```go
-client, err := helix.NewClient(&helix.Options{
-    ClientID: "your-client-id",
-})
+client, err := helix.NewClient(context.Background()
+    helix.WithClientID("your-client-id"),
+)
 if err != nil {
     // handle error
 }
 
-resp, err := client.CreatePoll(&helix.CreatePollParams{
+resp, err := client.CreatePoll(context.Background(), &helix.CreatePollParams{
     BroadcasterID: "145328278",
     Title: "Test",
     Choices: []helix.PollChoiceParam{
@@ -42,7 +42,7 @@ resp, err := client.CreatePoll(&helix.CreatePollParams{
         helix.PollChoiceParam{ Title: "choice 2" },
     },
     Duration: 30,
-})
+)
 if err != nil {
     // handle error
 }
@@ -55,18 +55,18 @@ fmt.Printf("%+v\n", resp)
 This is an example of how to end a poll.
 
 ```go
-client, err := helix.NewClient(&helix.Options{
-    ClientID: "your-client-id",
-})
+client, err := helix.NewClient(context.Background()
+    helix.WithClientID("your-client-id"),
+)
 if err != nil {
     // handle error
 }
 
-resp, err := client.EndPoll(&helix.EndPollParams{
+resp, err := client.EndPoll(context.Background(), &helix.EndPollParams{
     BroadcasterID: "145328278",
     ID: "25b14b42-d4d8-4756-86ce-842bf76f82a0",
     Status: "TERMINATED",
-})
+)
 if err != nil {
     // handle error
 }

@@ -7,16 +7,17 @@
 This is an example of how to get a multiples clip via their IDs.
 
 ```go
-client, err := helix.NewClient(&helix.Options{
-    ClientID: "your-client-id",
-})
+client, err := helix.NewClient(
+    context.Background(),
+    helix.WithClientID("your-client-id"),
+)
 if err != nil {
     // handle error
 }
 
-resp, err := client.GetClips(&helix.ClipsParams{
+resp, err := client.GetClips(context.Background(), &helix.ClipsParams{
     IDs: []string{"EncouragingPluckySlothSSSsss", "PatientBlindingChamoisSmoocherZ"},
-})
+)
 if err != nil {
     // handle error
 }
@@ -29,16 +30,17 @@ fmt.Printf("%+v\n", resp)
 This is an example of how to get multiple clips from a single broadcaster.
 
 ```go
-client, err := helix.NewClient(&helix.Options{
-    ClientID: "your-client-id",
-})
+client, err := helix.NewClient(
+    context.Background(),
+    helix.WithClientID("your-client-id"),
+)
 if err != nil {
     // handle error
 }
 
-resp, err := client.GetClips(&helix.ClipsParams{
+resp, err := client.GetClips(context.Background(), &helix.ClipsParams{
     BroadcasterID: "26490481", // summit1g
-})
+)
 if err != nil {
     // handle error
 }
@@ -51,16 +53,17 @@ fmt.Printf("%+v\n", resp)
 This is an example of how to get multiple clips from a single game.
 
 ```go
-client, err := helix.NewClient(&helix.Options{
-    ClientID: "your-client-id",
-})
+client, err := helix.NewClient(
+    context.Background(),
+    helix.WithClientID("your-client-id"),
+)
 if err != nil {
     // handle error
 }
 
-resp, err := client.GetClips(&helix.ClipsParams{
+resp, err := client.GetClips(context.Background(), &helix.ClipsParams{
     GameID: "490377", // Sea of Thieves
-})
+)
 if err != nil {
     // handle error
 }
@@ -73,18 +76,19 @@ fmt.Printf("%+v\n", resp)
 This is an example of how to create a clip:
 
 ```go
-client, err := helix.NewClient(&helix.Options{
-    ClientID:        "your-client-id",
-    UserAccessToken: "your-user-acceess-token",
-})
+client, err := helix.NewClient(
+    context.Background(),
+    helix.WithClientID("your-client-id"),
+    helix.WithUserAccessToken("your-user-access-token"),
+)
 if err != nil {
     // handle error
 }
 
-resp, err := client.CreateClip(&helix.CreateClipParams{
+resp, err := client.CreateClip(context.Background(), &helix.CreateClipParams{
     BroadcasterID: "26490481", // summit1g
     HasDelay: true, // optional, defaults to false
-})
+)
 if err != nil {
     // handle error
 }

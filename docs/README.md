@@ -35,17 +35,18 @@ go get -u github.com/nicklaw5/helix/v2
 main.go:
 
 ```go
-client, err := helix.NewClient(&helix.Options{
-    ClientID: "your-client-id",
-})
+client, err := helix.NewClient(
+    context.Background(),
+    helix.WithClientID("your-client-id"),
+)
 if err != nil {
     panic(err)
 }
 
-resp, err := client.GetUsers(&helix.UsersParams{
+resp, err := client.GetUsers(context.Background(), &helix.UsersParams{
     IDs:    []string{"26301881", "18074328"},
     Logins: []string{"summit1g", "lirik"},
-})
+)
 if err != nil {
     panic(err)
 }
@@ -82,9 +83,10 @@ Once you have a Client-ID, to create a new client simply the `NewClient` functio
 your client ID as an option. For example:
 
 ```go
-client, err := helix.NewClient(&helix.Options{
-    ClientID: "your-client-id",
-})
+client, err := helix.NewClient(
+    context.Background(),
+    helix.WithClientID("your-client-id"),
+)
 if err != nil {
     // handle error
 }
@@ -101,10 +103,11 @@ httpClient := &http.Client{
     Timeout: 10 * time.Second,
 }
 
-client, err := helix.NewClient(&helix.Options{
-    ClientID:   "your-client-id",
-    HTTPClient: httpClient,
-})
+client, err := helix.NewClient(
+    context.Background(),
+    helix.WithClientID("your-client-id"),
+    helix.WithHttpDo(httpClient.Do),
+)
 if err != nil {
     // handle error
 }
@@ -115,20 +118,37 @@ if err != nil {
 Below is a list of all available options that can be passed in when creating a new client:
 
 ```go
-type Options struct {
-    ClientID        string            // Required
-    ClientSecret    string            // Default: empty string
-    AppAccessToken  string            // Default: empty string
-    UserAccessToken string            // Default: empty string
-    UserAgent       string            // Default: empty string
-    RedirectURI     string            // Default: empty string
-    HTTPClient      HTTPClient        // Default: http.DefaultClient
-    RateLimitFunc   RateLimitFunc     // Default: nil
-    APIBaseURL      string            // Default: https://api.twitch.tv/helix
-}
+// REQUIRED
+helix.WithClientID(string)
+
+// OPTIONAL
+helix.WithClientSecret(string)
+
+// OPTIONAL
+helix.WithAppAccessToken(string)
+
+// OPTIONAL
+helix.WithUserAccessToken(string)
+
+// OPTIONAL
+helix.WithUserAgent(string)
+
+// OPTIONAL
+helix.WithRedirectURI(string)
+
+// OPTIONAL
+helix.WithHTTPClient(func(*http.Request) (*http.Response, error) {
+
+})
+
+// OPTIONAL
+helix.WithRateLimitFunc(helix.RateLimitFunc)
+
+// OPTIONAL
+helix.WithAPIBaseURL(string)
 ```
 
-If no custom `http.Client` is provided, `http.DefaultClient` is used by default.
+If no custom HTTP executor is provided, `http.DefaultClient` is used by default.
 
 ## Responses
 
@@ -204,10 +224,11 @@ func rateLimitCallback(lastResponse *helix.Response) error {
     return nil
 }
 
-client, err := helix.NewClient(&helix.Options{
-    ClientID:      "your-client-id",
-    RateLimitFunc: rateLimitCallback,
-})
+client, err := helix.NewClient(
+    context.Background(),
+    helix.WithClientID("your-client-id"),
+    hliex.WithRateLimitFunc(rateLimitCallback),
+)
 if err != nil {
     // handle error
 }
@@ -236,11 +257,12 @@ In order to set the access token for a request, you can either supply it as an o
 or `SetAppAccessToken` methods. For example:
 
 ```go
-client, err := helix.NewClient(&helix.Options{
-    ClientID:        "your-client-id",
-    UserAccessToken: "your-user-access-token",
-    AppAccessToken:  "your-app-access-token"
-})
+client, err := helix.NewClient(
+    context.Background(),
+    helix.WithClientID("your-client-id"),
+    WithUserAccessToken("your-user-access-token"),
+    WithAppAccessToken("your-app-access-token"),
+)
 if err != nil {
     // handle error
 }
@@ -251,9 +273,10 @@ if err != nil {
 Or:
 
 ```go
-client, err := helix.NewClient(&helix.Options{
-    ClientID: "your-client-id",
-})
+client, err := helix.NewClient(
+    context.Background(),
+    helix.WithClientID("your-client-id"),
+)
 if err != nil {
     // handle error
 }
@@ -276,10 +299,11 @@ request. You can do so by passing it through as an option when creating a new cl
 with the `SetUserAgent()` method before sending a request. For example:
 
 ```go
-client, err := helix.NewClient(&helix.Options{
-    ClientID:  "your-client-id",
+client, err := helix.NewClient(
+    context.Background(),
+    helix.WithClientID("your-client-id"),
     UserAgent: "your-user-agent-value",
-})
+)
 if err != nil {
     // handle error
 }
@@ -290,9 +314,10 @@ if err != nil {
 Alternatively, you can set by calling the `SetUserAgent()` method before sending a request. For example:
 
 ```go
-client, err := helix.NewClient(&helix.Options{
-    ClientID:  "your-client-id",
-})
+client, err := helix.NewClient(
+    context.Background(),
+    helix.WithClientID("your-client-id"),
+)
 if err != nil {
     // handle error
 }

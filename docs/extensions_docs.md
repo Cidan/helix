@@ -27,20 +27,21 @@ Note: Currently only the 'external' role is supported by helix endpoints.
 this is used to set the correct header for any Extension helix requests
 
 ```go
-client, err := helix.NewClient(&helix.Options{
-    ClientID:        "your-client-id",
-    UserAccessToken: "your-user-access-token",
-    ExtensionOpts: helix.ExtensionOptions{
+client, err := helix.NewClient(
+    context.Background(),
+    helix.WithClientID("your-client-id"),
+    helix.WithUserAccessToken("your-user-access-token"),
+    helix.WithExtensionOptions(helix.ExtensionOptions{
         OwnerUserID: os.Getenv(""),
         Secret: os.Getenv(""),
         ConfigurationVersion:  os.Getenv(""),
         Version: os.Getenv(""),
-    },
+    }),
 })
 
 
 // see docs below to see what pub-sub permissions you can pass 
-claims, err := client.ExtensionCreateClaims(broadcasterID, client.FormBroadcastSendPubSubPermissions(), 0)
+claims, err := client.ExtensionCreateClaims(context.Background(), broadcasterID, client.FormBroadcastSendPubSubPermissions(), 0)
 if err != nil {
     // handle err
 }
@@ -57,21 +58,22 @@ client.SetExtensionSignedJWTToken(jwt)
 
 ```go
 
-client, err := helix.NewClient(&helix.Options{
-    ClientID:        "your-client-id",
-    UserAccessToken: "your-user-access-token",
-    ExtensionOpts: helix.ExtensionOptions{
+client, err := helix.NewClient(
+    context.Background(),
+    helix.WithClientID("your-client-id"),
+    helix.WithUserAccessToken("your-user-access-token"),
+    helix.WithExtensionOptions(helix.ExtensionOptions{
         OwnerUserID: os.Getenv("EXT_OWNER_ID"),
         Secret: os.Getenv("EXT_SECRET"),
         ConfigurationVersion:  os.Getenv("EXT_CFG_VERSION"),
         Version: os.Getenv("EXT_VERSION"),
-    },
-})
+    }),
+)
 if err != nil {
     // handle error
 }
 
-claims, err := client.ExtensionCreateClaims(broadcasterID, ExternalRole, FormBroadcastSendPubSubPermissions(), 0)
+claims, err := client.ExtensionCreateClaims(context.Background(), broadcasterID, ExternalRole, FormBroadcastSendPubSubPermissions(), 0)
 if err != nil {
     // handle error
 }
@@ -82,9 +84,9 @@ client.SetExtensionSignedJWTToken(jwt)
 
 params := helix.ExtensionGetConfigurationParams{
     ExtensionID: "some-extension-id",                              // Required
-    Segments:          []helix.ExtensionSegmentType{helix.GlobalSegment}, // Optional
+    Segments:    []helix.ExtensionSegmentType{helix.GlobalSegment}, // Optional
 }
-resp, err := client.GetExtensionConfigurationSegment
+resp, err := client.GetExtensionConfigurationSegment(context.Background(), params)
 if err != nil {
     // handle error
 }
@@ -95,21 +97,22 @@ fmt.Printf("%+v\n", resp)
 ## Get Extension Transactions
 
 ```go
-client, err := helix.NewClient(&helix.Options{
-    ClientID:        "your-client-id",
-    UserAccessToken: "your-user-access-token",
-})
+client, err := helix.NewClient(
+    context.Background(),
+    helix.WithClientID("your-client-id"),
+    helix.WithUserAccessToken("your-user-access-token"),
+)
 if err != nil {
     // handle error
 }
 
-params := helix.ExtensionTransactionsParams{
+params := &helix.ExtensionTransactionsParams{
     ExtensionID: "some-extension-id",                              // Required
     ID:          []string{"74c52265-e214-48a6-91b9-23b6014e8041"}, // Optional
     First:       1,                                                // Optional
 }
 
-resp, err := client.GetExtensionTransactions(&params)
+resp, err := client.GetExtensionTransactions(context.Background(), params)
 if err != nil {
     // handle error
 }

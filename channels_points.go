@@ -1,5 +1,7 @@
 package helix
 
+import "context"
+
 type ChannelCustomRewardsParams struct {
 	BroadcasterID                     string `query:"broadcaster_id"`
 	Title                             string `json:"title"`
@@ -87,8 +89,8 @@ type DeleteCustomRewardsResponse struct {
 
 // CreateCustomReward : Creates a Custom Reward on a channel.
 // Required scope: channel:manage:redemptions
-func (c *Client) CreateCustomReward(params *ChannelCustomRewardsParams, opts ...Options) (*ChannelCustomRewardResponse, error) {
-	resp, err := c.postAsJSON("/channel_points/custom_rewards", &ManyChannelCustomRewards{}, params, opts...)
+func (c *Client) CreateCustomReward(ctx context.Context, params *ChannelCustomRewardsParams, opts ...Option) (*ChannelCustomRewardResponse, error) {
+	resp, err := c.postAsJSON(ctx, "/channel_points/custom_rewards", &ManyChannelCustomRewards{}, params, opts)
 	if err != nil {
 		return nil, err
 	}
@@ -102,8 +104,8 @@ func (c *Client) CreateCustomReward(params *ChannelCustomRewardsParams, opts ...
 
 // DeleteCustomRewards : Deletes a Custom Rewards on a channel
 // Required scope: channel:manage:redemptions
-func (c *Client) DeleteCustomRewards(params *DeleteCustomRewardsParams, opts ...Options) (*DeleteCustomRewardsResponse, error) {
-	resp, err := c.delete("/channel_points/custom_rewards", nil, params, opts...)
+func (c *Client) DeleteCustomRewards(ctx context.Context, params *DeleteCustomRewardsParams, opts ...Option) (*DeleteCustomRewardsResponse, error) {
+	resp, err := c.delete(ctx, "/channel_points/custom_rewards", nil, params, opts)
 	if err != nil {
 		return nil, err
 	}
@@ -116,8 +118,8 @@ func (c *Client) DeleteCustomRewards(params *DeleteCustomRewardsParams, opts ...
 
 // GetCustomRewards : Get Custom Rewards on a channel
 // Required scope: channel:read:redemptions
-func (c *Client) GetCustomRewards(params *GetCustomRewardsParams, opts ...Options) (*ChannelCustomRewardResponse, error) {
-	resp, err := c.get("/channel_points/custom_rewards", &ManyChannelCustomRewards{}, params, opts...)
+func (c *Client) GetCustomRewards(ctx context.Context, params *GetCustomRewardsParams, opts ...Option) (*ChannelCustomRewardResponse, error) {
+	resp, err := c.get(ctx, "/channel_points/custom_rewards", &ManyChannelCustomRewards{}, params, opts)
 	if err != nil {
 		return nil, err
 	}

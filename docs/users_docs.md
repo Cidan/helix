@@ -5,17 +5,17 @@
 This is an example of how to get users. Note that you don't need to provide both a list of ids and logins, one or the other will suffice.
 
 ```go
-client, err := helix.NewClient(&helix.Options{
-    ClientID: "your-client-id",
-})
+client, err := helix.NewClient(context.Background()
+    helix.WithClientID("your-client-id"),
+)
 if err != nil {
     // handle error
 }
 
-resp, err := client.GetUsers(&helix.UsersParams{
+resp, err := client.GetUsers(context.Background(), &helix.UsersParams{
     IDs:    []string{"26301881", "18074328"},
     Logins: []string{"summit1g", "lirik"},
-})
+)
 if err != nil {
     // handle error
 }
@@ -28,17 +28,17 @@ fmt.Printf("%+v\n", resp)
 This is an example of how to update a users description:
 
 ```go
-client, err := helix.NewClient(&helix.Options{
+client, err := helix.NewClient(context.Background()
     ClientID:        "your-client-id",
     UserAccessToken: "your-user-access-token",
-})
+)
 if err != nil {
     // handle error
 }
 
-resp, err := client.UpdateUser(&UpdateUserParams{
+resp, err := client.UpdateUser(context.Background(), &UpdateUserParams{
   Description: "New description",
-})
+)
 if err != nil {
     // handle error
 }
@@ -51,16 +51,16 @@ fmt.Printf("%+v\n", resp)
 This is an example of how to get users follows.
 
 ```go
-client, err := helix.NewClient(&helix.Options{
-    ClientID: "your-client-id",
-})
+client, err := helix.NewClient(context.Background()
+    helix.WithClientID("your-client-id"),
+)
 if err != nil {
     // handle error
 }
 
-resp, err := client.GetUsersFollows(&helix.UsersFollowsParams{
+resp, err := client.GetUsersFollows(context.Background(), &helix.UsersFollowsParams{
     FromID:  "23161357",
-})
+)
 if err != nil {
     // handle error
 }
@@ -73,16 +73,16 @@ fmt.Printf("%+v\n", resp)
 This is an example of how to get users blocked
 
 ```go
-client, err := helix.NewClient(&helix.Options{
-    ClientID: "your-client-id",
-})
+client, err := helix.NewClient(context.Background()
+    helix.WithClientID("your-client-id"),
+)
 if err != nil {
     // handle error
 }
 
-resp, err := client.GetUsersBlocked(&helix.UsersBlockedParams{
+resp, err := client.GetUsersBlocked(context.Background(), &helix.UsersBlockedParams{
     BroadcasterID: "145328278",
-})
+)
 if err != nil {
     // handle error
 }
@@ -95,18 +95,18 @@ fmt.Printf("%+v\n", resp)
 This is an example of how to block user
 
 ```go
-client, err := helix.NewClient(&helix.Options{
-    ClientID: "your-client-id",
-})
+client, err := helix.NewClient(context.Background()
+    helix.WithClientID("your-client-id"),
+)
 if err != nil {
     // handle error
 }
 
-resp, err := client.BlockUser(&helix.BlockUserParams{
+resp, err := client.BlockUser(context.Background(), &helix.BlockUserParams{
     TargetUserID:  "677636701",
     SourceContext: "chat",
     Reason:        "spam",
-})
+)
 if err != nil {
     // handle error
 }
@@ -119,16 +119,16 @@ fmt.Printf("%+v\n", resp)
 This is an example of how to unblock user
 
 ```go
-client, err := helix.NewClient(&helix.Options{
-    ClientID: "your-client-id",
-})
+client, err := helix.NewClient(context.Background()
+    helix.WithClientID("your-client-id"),
+)
 if err != nil {
     // handle error
 }
 
-resp, err := client.UnblockUser(&helix.UnblockUserParams{
+resp, err := client.UnblockUser(context.Background(), &helix.UnblockUserParams{
     TargetUserID: "677636701",
-})
+)
 if err != nil {
     // handle error
 }

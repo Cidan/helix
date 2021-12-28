@@ -1,6 +1,7 @@
 package helix
 
 import (
+	"context"
 	"net/http"
 	"regexp"
 )
@@ -29,8 +30,8 @@ type WebhookSubscriptionsParams struct {
 
 // GetWebhookSubscriptions gets webhook subscriptions, in order of expiration.
 // Requires an app access token.
-func (c *Client) GetWebhookSubscriptions(params *WebhookSubscriptionsParams, opts ...Options) (*WebhookSubscriptionsResponse, error) {
-	resp, err := c.get("/webhooks/subscriptions", &ManyWebhookSubscriptions{}, params, opts...)
+func (c *Client) GetWebhookSubscriptions(ctx context.Context, params *WebhookSubscriptionsParams, opts ...Option) (*WebhookSubscriptionsResponse, error) {
+	resp, err := c.get(ctx, "/webhooks/subscriptions", &ManyWebhookSubscriptions{}, params, opts)
 	if err != nil {
 		return nil, err
 	}
@@ -56,8 +57,8 @@ type WebhookSubscriptionPayload struct {
 	Secret       string `json:"hub.secret,omitempty"`
 }
 
-func (c *Client) PostWebhookSubscription(payload *WebhookSubscriptionPayload, opts ...Options) (*WebhookSubscriptionResponse, error) {
-	resp, err := c.postAsJSON("/webhooks/hub", nil, payload, opts...)
+func (c *Client) PostWebhookSubscription(ctx context.Context, payload *WebhookSubscriptionPayload, opts ...Option) (*WebhookSubscriptionResponse, error) {
+	resp, err := c.postAsJSON(ctx, "/webhooks/hub", nil, payload, opts)
 	if err != nil {
 		return nil, err
 	}

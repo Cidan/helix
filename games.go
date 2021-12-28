@@ -1,5 +1,7 @@
 package helix
 
+import "context"
+
 type Game struct {
 	ID        string `json:"id"`
 	Name      string `json:"name"`
@@ -20,8 +22,8 @@ type GamesParams struct {
 	Names []string `query:"name"` // Limit 100
 }
 
-func (c *Client) GetGames(params *GamesParams, opts ...Options) (*GamesResponse, error) {
-	resp, err := c.get("/games", &ManyGames{}, params, opts...)
+func (c *Client) GetGames(ctx context.Context, params *GamesParams, opts ...Option) (*GamesResponse, error) {
+	resp, err := c.get(ctx, "/games", &ManyGames{}, params, opts)
 	if err != nil {
 		return nil, err
 	}
@@ -49,8 +51,8 @@ type TopGamesResponse struct {
 	Data ManyGamesWithPagination
 }
 
-func (c *Client) GetTopGames(params *TopGamesParams, opts ...Options) (*TopGamesResponse, error) {
-	resp, err := c.get("/games/top", &ManyGamesWithPagination{}, params, opts...)
+func (c *Client) GetTopGames(ctx context.Context, params *TopGamesParams, opts ...Option) (*TopGamesResponse, error) {
+	resp, err := c.get(ctx, "/games/top", &ManyGamesWithPagination{}, params, opts)
 	if err != nil {
 		return nil, err
 	}

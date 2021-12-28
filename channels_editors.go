@@ -1,5 +1,7 @@
 package helix
 
+import "context"
+
 type ChannelEditorsParams struct {
 	BroadcasterID string `query:"broadcaster_id"`
 }
@@ -22,8 +24,8 @@ type ChannelEditorsResponse struct {
 
 // GetChannelEditors Get a list of users who have editor permissions for a specific channel
 // Required scope: channel:read:editors
-func (c *Client) GetChannelEditors(params *ChannelEditorsParams, opts ...Options) (*ChannelEditorsResponse, error) {
-	resp, err := c.get("/channels/editors", &ManyChannelEditors{}, params, opts...)
+func (c *Client) GetChannelEditors(ctx context.Context, params *ChannelEditorsParams, opts ...Option) (*ChannelEditorsResponse, error) {
+	resp, err := c.get(ctx, "/channels/editors", &ManyChannelEditors{}, params, opts)
 	if err != nil {
 		return nil, err
 	}

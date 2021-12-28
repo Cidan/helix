@@ -1,5 +1,7 @@
 package helix
 
+import "context"
+
 type AdLengthEnum int
 
 const (
@@ -35,8 +37,8 @@ type StartCommercialResponse struct {
 // StartCommercial starts a commercial on a specified channel
 // OAuth Token required
 // Requires channel:edit:commercial scope
-func (c *Client) StartCommercial(params *StartCommercialParams, opts ...Options) (*StartCommercialResponse, error) {
-	resp, err := c.post("/channels/commercial", &ManyAdDetails{}, params, opts...)
+func (c *Client) StartCommercial(ctx context.Context, params *StartCommercialParams, opts ...Option) (*StartCommercialResponse, error) {
+	resp, err := c.post(ctx, "/channels/commercial", &ManyAdDetails{}, params, opts)
 	if err != nil {
 		return nil, err
 	}
